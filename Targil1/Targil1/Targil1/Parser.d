@@ -1,5 +1,8 @@
 module Parser;
 import CommandTypeEnum;
+
+import CodeWriterModule;
+
 import std.conv;
 import std.stdio;
 import std.algorithm;
@@ -25,9 +28,8 @@ class Parser
 
 	bool hasMoreCommand()
 	{
-		if(vmFile.eof)
+		if(vmFile.eof())
 		{
-			vmFile.close();
 			return false;
 		}
 		else
@@ -97,6 +99,27 @@ class Parser
 
 	int arg2()
 	{
-		return parse!int(currentCommand.split[2]);
+		return to!int(currentCommand.split[2]);
+	}
+	
+	void parse(CodeWriter codeWriter)
+	{
+		while(hasMoreCommand())
+		{
+			advance();
+			switch(commandType())
+			{
+				case CommandType.C_ARITHMETIC:
+					codeWriter.writeArithmetic(arg1());
+					break;
+				case CommandType.C_POP:
+				case CommandType.C_PUSH:
+					codeWriter.writePushPop(commandType(),arg1(),arg2());
+					break;
+				default:
+					break;
+			}
+		}
+		codeWriter.close();
 	}
 }
