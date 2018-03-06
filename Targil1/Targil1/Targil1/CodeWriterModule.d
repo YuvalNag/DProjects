@@ -19,7 +19,7 @@ class CodeWriter
 	File asmFile;
 	string currentCommand;
 
-	string filename;
+	string fileName;
 
 
 public:
@@ -50,7 +50,7 @@ public:
 			case "eq":
 				booleanOp(toUpper(command));
 				break;
-			case "qt":
+			case "gt":
 				booleanOp(toUpper(command));
 				break;
 			case "lt":
@@ -69,85 +69,7 @@ public:
 				break;
 		}
 	}
-	void writePushPop(CommandType commandType,string segment,int index)
-	{
-
-        switch(segment)
-		{
-			//Group 1 (local, argument, this, that)
-			case "argument":
-				{
-					if(commandType==CommandType.C_POP)
-						popGroup1("ARG", index);
-					else
-                       pushGroup1("ARG", index);
-					break;
-				}
-		    case "local":
-				{
-					if(commandType==CommandType.C_POP)
-						popGroup1("LCL", index);
-					else
-						pushGroup1("LCL", index);
-					break;
-				}
-			case "this":
-				{
-					if(commandType==CommandType.C_POP)
-						popGroup1("THIS", index);
-					else
-						pushGroup1("THIS", index);
-					break;
-				}
-			case "that":
-				{
-					if(commandType==CommandType.C_POP)
-						popGroup1("THAT", index);
-					else
-						pushGroup1("THAT", index);
-					break;
-				}
-			//Group 2 (temp)
-			case "temp":
-				{
-					if(commandType==CommandType.C_POP)
-						popTemp(index);
-					else
-						pushTemp(index);
-					break;
-				}
-			//Group 3 (static)
-			case "static":
-				{
-					if(commandType==CommandType.C_POP)
-					    popArgument( segment, index);
-					else
-					    pushArgument( segment, index);
-
-					break;
-
-
-				}
-			//Group 4 (pointer 0, pointer 1)
-			case "pointer":
-				{
-
-					if(commandType==CommandType.C_POP)
-						popPointer( index);
-					else{}
-						//pushPointer( index);
-					break;
-				}
-			//Group 5 (constant)
-			case "constent":
-				{
-					pushConstent(index);
-					break;
-				}
-				default:
-					break;
-		}
-	}
+	
 	void close()
 	{
 		asmFile.close();
@@ -186,13 +108,13 @@ private:
 	void sub()
 	{
 		binaryOp();
-		asmFile.writeln("M=D-M");
+		asmFile.writeln("M=M-D");
 		incRegister("SP",1);
 	}
 	void and()
 	{
 		binaryOp();
-		asmFile.writeln("M=D&M");
+		asmFile.writeln("M=M&D");
 		incRegister("SP",1);
 	}
 	void or()
@@ -217,16 +139,18 @@ private:
 	{
 		binaryOp();
 		asmFile.writeln("D=M-D");
-		asmFile.writeln("@IfTrue");
+		asmFile.writeln("@IfTrue"~op);
 		asmFile.writeln("D;J"~op);
 		asmFile.writeln("@SP");
+		asmFile.writeln("A=M");
 		asmFile.writeln("M=0");
-		asmFile.writeln("@END");
-		asmFile.writeln("JMP");
-		asmFile.writeln("(IfTrue)");
+		asmFile.writeln("@END"~op);
+		asmFile.writeln("0;JMP");
+		asmFile.writeln("(IfTrue"~op~")");
 		asmFile.writeln("@SP");
+		asmFile.writeln("A=M");
 		asmFile.writeln("M=-1");
-		asmFile.writeln("(END)");
+		asmFile.writeln("(END"~op~")");
 		incRegister("SP",1);
 	}
 	
@@ -251,7 +175,11 @@ private:
 		asmFile.writeln("@R15");
 		asmFile.writeln("A=M");//A =RAM[Sagment] + index
 		asmFile.writeln("M=D");//RAM[RAM[Sagment] + index]=RAM[SP]
+		asmFile.writeln("@R15");
+		asmFile.writeln("M=0");
+
 	}
+
 	void pushGroup1(string regSagment ,int index)
 	{
 		asmFile.writeln("@"~to!string(index));// A=index
@@ -261,10 +189,13 @@ private:
 		asmFile.writeln("A=A+D");//A =RAM[Sagment] + index
 		asmFile.writeln("D=M");// D=RAM[RAM[Sagment] + index]
 		asmFile.writeln("@SP");
+		asmFile.writeln("A=M");
+
 		asmFile.writeln("M=D");// RAM[SP]=RAM[RAM[Sagment] + index]
 		incRegister("SP",1);
 
 	}
+
 	void popTemp(int index)
 	{
 		asmFile.writeln("@"~to!string(index));// A=index
@@ -281,8 +212,10 @@ private:
 		asmFile.writeln("@R15");
 		asmFile.writeln("A=M");//A =5 + index
 		asmFile.writeln("M=D");//RAM[5 + index]=RAM[SP]
-
+		asmFile.writeln("@R15");
+		asmFile.writeln("M=0");
 	}
+
 	void pushTemp(int index)
 	{
 		asmFile.writeln("@"~to!string(index));// A=index
@@ -291,35 +224,36 @@ private:
 		asmFile.writeln("A=A+D");//A =5 + index
 		asmFile.writeln("D=M");// D=RAM[5 + index]
 		asmFile.writeln("@SP");
+		asmFile.writeln("A=M");
 		asmFile.writeln("M=D");// RAM[SP]=RAM[5 + index]
 		incRegister("SP",1);
 	}
+
 	void pushConstent(int value)
 	{
 		asmFile.writeln("@"~to!string(value));
 		asmFile.writeln("D=A");// D=value
 		asmFile.writeln("@SP");
+		asmFile.writeln("A=M");
 		asmFile.writeln("M=D");// RAM[SP]=value
 		incRegister("SP",1);
 	}
 	void popPointer(int index)
 	{
+		
+		decRegister("SP",1);
+		asmFile.writeln("@SP");
+		asmFile.writeln("A=M");
+		asmFile.writeln("D=M");
+	
 		if(index==0)
 		    asmFile.writeln("@THIS");
 		else
 			asmFile.writeln("@THAT");
 
-		asmFile.writeln("D=M");// D=RAM[THIS/THAT]
-		asmFile.writeln("@R15");
-		asmFile.writeln("M=D");//R15 =RAM[THIS/THAT]
-
-		decRegister("SP",1);
-		asmFile.writeln("@SP");
-		asmFile.writeln("A=M");
-		asmFile.writeln("D=M");//D=RAM[SP]
-		asmFile.writeln("@R15");
-		asmFile.writeln("A=M");//A =RAM[THIS/THAT]
-		asmFile.writeln("M=D");//RAM[THIS/THAT]=RAM[SP]
+	
+		asmFile.writeln("M=D");
+		
 	}
 	void pushPointer(int index)
 	{
@@ -330,6 +264,7 @@ private:
 
 		asmFile.writeln("D=M");// D=RAM[THIS/THAT]
 		asmFile.writeln("@SP");
+		asmFile.writeln("A=M");
 		asmFile.writeln("M=D");// RAM[SP]=RAM[THIS/THAT]
 		incRegister("SP",1);
 	}
@@ -352,6 +287,87 @@ private:
 		asmFile.writeln("@"~fileName~"."~to!string(index));  
 		asmFile.writeln("M=D");
 
+	}
+public:
+	void writePushPop(CommandType commandType,string segment,int index)
+	{
+
+        switch(segment)
+		{
+			//Group 1 (local, argument, this, that)
+			case "argument":
+				{
+					if(commandType==CommandType.C_POP)
+						popGroup1("ARG", index);
+					else
+						pushGroup1("ARG", index);
+					break;
+				}
+		    case "local":
+				{
+					if(commandType==CommandType.C_POP)
+						popGroup1("LCL", index);
+					else
+						pushGroup1("LCL", index);
+					break;
+				}
+			case "this":
+				{
+					if(commandType==CommandType.C_POP)
+						popGroup1("THIS", index);
+					else
+						pushGroup1("THIS", index);
+					break;
+				}
+			case "that":
+				{
+					if(commandType==CommandType.C_POP)
+						popGroup1("THAT", index);
+					else
+						pushGroup1("THAT", index);
+					break;
+				}
+				//Group 2 (temp)
+			case "temp":
+				{
+					if(commandType==CommandType.C_POP)
+						popTemp(index);
+					else
+						pushTemp(index);
+					break;
+				}
+				//Group 3 (static)
+			case "static":
+				{
+					if(commandType==CommandType.C_POP)
+					    popStatic( index);
+					else
+					    pushStatic( index);
+
+					break;
+
+
+				}
+				//Group 4 (pointer 0, pointer 1)
+			case "pointer":
+				{
+
+					if(commandType==CommandType.C_POP)
+						popPointer( index);
+					else
+						pushPointer( index);
+					break;
+				}
+				//Group 5 (constant)
+			case "constant":
+				{
+					int x=9;
+					pushConstent(index);
+					break;
+				}
+			default:
+				break;
+		}
 	}
 	
 }

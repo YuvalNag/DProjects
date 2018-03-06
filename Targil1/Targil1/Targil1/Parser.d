@@ -63,7 +63,7 @@ class Parser
 					case "sub":
 				   case "neg":
 					case "eq":
-					case "qt":
+					case "gt":
 					case "lt":
 					case "and":
 					case "or":
