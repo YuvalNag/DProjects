@@ -430,7 +430,7 @@
  </Config>
  <Folder name="Targil1">
   <File path="CodeWriter.d" />
-  <File path="CommandType.d" />
+  <File path="CommandTypeEnum.d" />
   <File path="main.d" />
   <File path="Parser.d" />
  </Folder>

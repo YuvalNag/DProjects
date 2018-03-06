@@ -1,5 +1,5 @@
 module CodeWriter;
-import CommandType;
+import CommandTypeEnum;
 import std.conv;
 import std.stdio;
 import std.algorithm;
@@ -14,10 +14,12 @@ class CodeWriter
 {
 	File asmFile;
 	string currentCommand;
+	string filename;
 
 public:
 	this(string path,string fileName)
 	{
+		this.filename=fileName;
 		asmFile=File(chainPath(chomp(path),fileName~".asm"), "w");
 	}
 	
@@ -100,10 +102,10 @@ public:
 			//Group 3 (static)
 			case "static":
 				{
-					if(commandType==CommandType.C_POP)
-						popArgument( segment, index);
-					else
-						pushArgument( segment, index);
+					//if(commandType==CommandType.C_POP)
+					//    popArgument( segment, index);
+					//else
+					//    pushArgument( segment, index);
 					break;
 				}
 			//Group 4 (pointer 0, pointer 1)
@@ -111,8 +113,8 @@ public:
 				{
 					if(commandType==CommandType.C_POP)
 						popPointer( index);
-					else
-						pushPointer( index);
+					else{}
+						//pushPointer( index);
 					break;
 				}
 			//Group 5 (constant)
@@ -121,6 +123,8 @@ public:
 					pushConstent(index);
 					break;
 				}
+				default:
+					break;
 		}
 	}
 	void close()
@@ -128,7 +132,7 @@ public:
 		asmFile.close();
 	}
 private:
-	//____________________________________________________________________________________________________________________________________________________________________________________________________________________________
+	//_________________________________________________
 	void incRegister(string register ,int index)
 	{
 		asmFile.writeln("@"~register);
@@ -142,8 +146,8 @@ private:
 	void binaryOp()
 	{
 		decRegister("SP",1);
-		asmFile.writeln("A=M");
-		asmFile.writeln("D=M");
+		asmFile.writeln("A=M");//A=RAM[SP] - addr of the top of the stock
+		asmFile.writeln("D=M");//D=RAM[RAM[SP]] -the value at the top of the stock -first arg
 		decRegister("SP",1);
 		asmFile.writeln("A=M");
 	}

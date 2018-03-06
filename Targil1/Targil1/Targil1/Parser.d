@@ -1,5 +1,5 @@
 module Parser;
-//import CommandType;
+import CommandTypeEnum;
 import std.conv;
 import std.stdio;
 import std.algorithm;
@@ -9,7 +9,7 @@ import std.string;
 import std.path;
 import std.uni;
 
-enum CommandType {C_ERROR,C_ARITHMETIC,C_PUSH,C_POP,C_LABEL,C_GOTO,C_IF,C_FUNCTION,C_RETURN,C_CALL};
+//enum CommandType {C_ERROR,C_ARITHMETIC,C_PUSH,C_POP,C_LABEL,C_GOTO,C_IF,C_FUNCTION,C_RETURN,C_CALL};
 
 class Parser
 {
