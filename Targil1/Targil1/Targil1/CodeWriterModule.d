@@ -1,5 +1,5 @@
-module CodeWriter;
-import CommandType;
+module CodeWriterModule;
+import CommandTypeEnum;
 import std.conv;
 import std.stdio;
 import std.algorithm;
@@ -8,19 +8,26 @@ import std.file;
 import std.string;
 import std.path;
 import std.uni;
+import std.ascii;
+
 
 
 class CodeWriter
 {
 	File asmFile;
 	string currentCommand;
+	string fileName;
 
 public:
 	this(string path,string fileName)
 	{
+		setFileName(fileName);
 		asmFile=File(chainPath(chomp(path),fileName~".asm"), "w");
 	}
-	
+	void setFileName(string fileName)
+	{
+		this.fileName=fileName;
+	}
 	void writeArithmetic(string command)
 	{
 		switch(command)
@@ -35,8 +42,14 @@ public:
 				neg();
 				break;
 			case "eq":
+				booleanOp(toUpper(command));
+				break;
 			case "qt":
+				booleanOp(toUpper(command));
+				break;
 			case "lt":
+				booleanOp(toUpper(command));
+				break;
 			case "and":
 				and();
 				break;
@@ -100,15 +113,16 @@ public:
 			//Group 3 (static)
 			case "static":
 				{
-					if(commandType==CommandType.C_POP)
-						popArgument( segment, index);
-					else
-						pushArgument( segment, index);
-					break;
+					//if(commandType==CommandType.C_POP)
+					//    popArgument( segment, index);
+					//else
+					//    pushArgument( segment, index);
+					//break;
 				}
 			//Group 4 (pointer 0, pointer 1)
 			case "pointer":
 				{
+
 					if(commandType==CommandType.C_POP)
 						popPointer( index);
 					else
@@ -121,6 +135,8 @@ public:
 					pushConstent(index);
 					break;
 				}
+				default:
+					break;
 		}
 	}
 	void close()
@@ -188,6 +204,23 @@ private:
 		asmFile.writeln("M=-M");
 		incRegister("SP",1);
 	}
+	void booleanOp(string op)
+	{
+		binaryOp();
+		asmFile.writeln("D=M-D");
+		asmFile.writeln("@IfTrue");
+		asmFile.writeln("D;J"~op);
+		asmFile.writeln("@SP");
+		asmFile.writeln("M=0");
+		asmFile.writeln("@END");
+		asmFile.writeln("JMP");
+		asmFile.writeln("(IfTrue)");
+		asmFile.writeln("@SP");
+		asmFile.writeln("M=-1");
+		asmFile.writeln("(END)");
+		incRegister("SP",1);
+	}
+	
 	//____________________________________________________________________________________________________________________________________________________________________________________________________________________________
 
 
@@ -252,7 +285,6 @@ private:
 		asmFile.writeln("M=D");// RAM[SP]=RAM[5 + index]
 		incRegister("SP",1);
 	}
-
 	void pushConstent(int value)
 	{
 		asmFile.writeln("@"~to!string(value));
@@ -261,7 +293,6 @@ private:
 		asmFile.writeln("M=D");// RAM[SP]=value
 		incRegister("SP",1);
 	}
-
 	void popPointer(int index)
 	{
 		if(index==0)
@@ -281,5 +312,37 @@ private:
 		asmFile.writeln("A=M");//A =RAM[THIS/THAT]
 		asmFile.writeln("M=D");//RAM[THIS/THAT]=RAM[SP]
 	}
+	void pushPointer(int index)
+	{
+		if(index==0)
+		    asmFile.writeln("@THIS");//A =THIS
+		else
+			asmFile.writeln("@THAT");//A =THAT
 
+		asmFile.writeln("D=M");// D=RAM[THIS/THAT]
+		asmFile.writeln("@SP");
+		asmFile.writeln("M=D");// RAM[SP]=RAM[THIS/THAT]
+		incRegister("SP",1);
+	}
+	void pushStatic(int index)
+	{
+		// push static index from 'fileName.vm' in asm:
+		asmFile.writeln("@"~fileName~"."~to!string(index));  
+		asmFile.writeln("D=M");
+		asmFile.writeln("@SP");
+		asmFile.writeln("A=M");
+		asmFile.writeln("M=D");
+		incRegister("SP",1);
+	}
+	void popStatic(int index)
+	{
+		// pop static 0 from 'ClassA.vm' in asm:
+		decRegister("SP",1);
+		asmFile.writeln("A=M");
+		asmFile.writeln("D=M");
+		asmFile.writeln("@"~fileName~"."~to!string(index));  
+		asmFile.writeln("M=D");
+
+	}
+	
 }
