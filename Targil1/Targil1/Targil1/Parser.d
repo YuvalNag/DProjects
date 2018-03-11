@@ -61,7 +61,7 @@ class Parser
 				{
 					case "add":
 					case "sub":
-				   case "neg":
+				    case "neg":
 					case "eq":
 					case "gt":
 					case "lt":
@@ -75,6 +75,7 @@ class Parser
 						
 					case "pop":
 						return CommandType.C_POP;
+
 					default:
 						{
 							advance();
@@ -107,6 +108,7 @@ class Parser
 		while(hasMoreCommand())
 		{
 			advance();
+
 			switch(commandType())
 			{
 				case CommandType.C_ARITHMETIC:
@@ -116,10 +118,14 @@ class Parser
 				case CommandType.C_PUSH:
 					codeWriter.writePushPop(commandType(),arg1(),arg2());
 					break;
+				case CommandType.C_ERROR:
+					writeln("error while reading the file");
+					readln();
 				default:
 					break;
 			}
 		}
+		vmFile.close();
 		codeWriter.close();
 	}
 }
