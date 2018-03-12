@@ -55,9 +55,9 @@ int main(string[] argv)
 
 	DirParser dir =new DirParser();
 
-	dir.vmTOasm("C:\\Users\\USER\\Desktop\\vm\\8");
+	//dir.vmTOasm("C:\\Users\\USER\\Desktop\\vm\\8");
 
-	//dir.vmTOasm("C:\\Users\\nissy34\\OneDrive - g.jct.ac.il\\semester B\\Lang\\Exercises\\Targil2\\project 08\\FunctionCalls\\StaticsTest");
+	dir.vmTOasm("C:\\Users\\nissy34\\OneDrive - g.jct.ac.il\\semester B\\Lang\\Exercises\\Targil2\\project 08\\FunctionCalls\\FibonacciElement");
 
     return 0;
 }

@@ -494,6 +494,7 @@ private:
 
 	void call(string funcName,int argNumber)
 	{
+		asmFile.writeln("\n","//push return addr");
 		string returnLabel ="return_"~funcName~to!string(labelCount++);  
 		asmFile.writeln("@"~returnLabel);
 		asmFile.writeln("D=A");// D=value
@@ -502,16 +503,30 @@ private:
 		asmFile.writeln("M=D");// RAM[SP]=value
 		incRegister("SP",1);
 
+		asmFile.writeln("\n","//push LCL");
 		push("LCL");
+
+		asmFile.writeln("\n","//push ARG");
 		push("ARG");
+
+		asmFile.writeln("\n","//push THIS");
 		push("THIS");
+
+		asmFile.writeln("\n","//push THAT");
 		push("THAT");
+		
+		asmFile.writeln("\n","//ARG=SP-5-n");
 		argAssiment(argNumber);//ARG=SP-5-n
+		
+		asmFile.writeln("\n","//LCL=SP");
 		asmFile.writeln("@SP");//A =SP
-		asmFile.writeln("D=A");// D=SP
+		asmFile.writeln("D=M");// D=SP
 		asmFile.writeln("@LCL");//A =LCL
 		asmFile.writeln("M=D");// RAM[LCL]=SP
+
+		asmFile.writeln("\n","//goto ",funcName);
 		writeGoto(funcName);
+
 		writeLabel(returnLabel);
 	}
 	void argAssiment(int argNumber)
@@ -521,7 +536,7 @@ private:
 		asmFile.writeln("@"~to!string(argNumber));//A =n
 		asmFile.writeln("D=A+D");// D=5+n
 		asmFile.writeln("@SP");//A =SP
-		asmFile.writeln("D=A-D");// D=SP-(5+n)
+		asmFile.writeln("D=M-D");// D=SP-(5+n)
 		asmFile.writeln("@ARG");//A =ARG
 		asmFile.writeln("M=D");// RAM[ARG]=D
 	}
@@ -535,39 +550,52 @@ private:
 
 	void writeReturn()
 	{
+        string temp="temp"~to!string(labelCount++);
+		string ret ="ret"~to!string(labelCount++);
+
+		asmFile.writeln("\n","//FRAME=LCL");
 		asmFile.writeln("@LCL");//A =LCL
 		asmFile.writeln("D=M");// D=RAM[LCL]
-		asmFile.writeln("@frame");//A =frame
+		asmFile.writeln("@"~temp);//A =frame
 		asmFile.writeln("M=D");// RAM[frame]=RAM[LCL]
 		
 
-		restoreSagment("RET",5);//RET=*(frame-5)	
+		asmFile.writeln("\n","//RET=*(FRAME-5)");
+		restoreSagment(ret,5,temp);//RET=*(frame-5)	
 
-		
+		asmFile.writeln("\n","//*ARG=pop ARG 0");
 		popGroup1("ARG",0);
 
+		asmFile.writeln("\n","//SP=ARG+1");
 		asmFile.writeln("@ARG");//A =ARG
 		asmFile.writeln("D=M+1");// D=RAM[ARG]+1
 		asmFile.writeln("@SP");//A =SP
 		asmFile.writeln("M=D");// RAM[SP]=RAM[ARG]+1
 
-		restoreSagment("THAT",1);//THAT=*(frame-1)	
-		restoreSagment("THIS",2);//THIS=*(frame-2)	
-		restoreSagment("ARG",3);//ARG=*(frame-3)	
-		restoreSagment("LCL",4);//LCL=*(frame-4)	
+		asmFile.writeln("\n","//THAT=*(FRAME-1)");
+		restoreSagment("THAT",1,temp);//THAT=*(frame-1)	
+
+		asmFile.writeln("\n","//ARG=*(FRAME-2)");
+		restoreSagment("THIS",2,temp);//THIS=*(frame-2)	
+
+		asmFile.writeln("\n","//THAT=*(FRAME-3)");
+		restoreSagment("ARG",3,temp);//ARG=*(frame-3)	
+
+		asmFile.writeln("\n","//LCL=*(FRAME-4)");
+		restoreSagment("LCL",4,temp);//LCL=*(frame-4)	
 
 		
-
-		asmFile.writeln("@RET");
+       asmFile.writeln("\n","//goto RET");
+		asmFile.writeln("@"~ret);
 		asmFile.writeln("A=M");
 		asmFile.writeln("0;JMP");
 
 	
 	}
 
-	void restoreSagment(string sagment,int index)
+	void restoreSagment(string sagment,int index,string temp)
 	{
-		asmFile.writeln("@frame");//A =frame
+		asmFile.writeln("@"~temp);//A =frame
 		asmFile.writeln("D=M");// D=RAM[frame]
 		asmFile.writeln("@"~to!string(index));//A =index
 		asmFile.writeln("A=D-A");// A=RAM[frame]-index
