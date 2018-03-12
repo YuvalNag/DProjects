@@ -49,13 +49,16 @@ class Parser
 	CommandType commandType()
 	{
 		string firstword;
-		do
-		{
+		//do
+		//{
 
 			if(currentCommand.length!=0)
                   firstword=currentCommand.split[0];
 			else
-				firstword="";
+				return CommandType.WHITE_SPACE;
+			
+			if(startsWith(currentCommand,"//"))
+				return CommandType.COMMIT;
                 
 				switch(firstword)
 				{
@@ -76,14 +79,17 @@ class Parser
 					case "pop":
 						return CommandType.C_POP;
 
-					default:
+				   case "":
+					    return CommandType.WHITE_SPACE;
+
+				   default:
 						{
-							advance();
+							return CommandType.C_ERROR;
 						    break;
 						}
 				}
 
-		}while(hasMoreCommand());
+		//}while(hasMoreCommand());
 
 		return CommandType.C_ERROR;
 	}
@@ -118,6 +124,10 @@ class Parser
 				case CommandType.C_PUSH:
 					codeWriter.writePushPop(commandType(),arg1(),arg2());
 					break;
+			    case CommandType.COMMIT:
+				case CommandType.WHITE_SPACE:
+					continue;
+					break;
 				case CommandType.C_ERROR:
 					writeln("error while reading the file");
 					readln();
@@ -126,6 +136,6 @@ class Parser
 			}
 		}
 		vmFile.close();
-		codeWriter.close();
+		
 	}
 }
