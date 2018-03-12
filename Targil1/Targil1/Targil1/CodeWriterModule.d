@@ -374,6 +374,21 @@ private:
 		asmFile.writeln("M=D");// RAM[SP]=value
 		incRegister("SP",1);
 	}
+	void label(string label)
+	{
+		asmFile.writleln("(",label,")");
+	}
+		
+
+	void IF(string label)
+	{
+		decRegister("SP",1);
+		asmFile.writeln("A=M");
+		asmFile.writeln("D=M");
+		asmFile.writeln("@",label);
+		asmFile.writleln("D;JNE");
+	}
+
 	void popPointer(int index)
 	{
 		
