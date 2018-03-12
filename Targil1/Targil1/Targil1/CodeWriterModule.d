@@ -17,7 +17,7 @@ import std.ascii;
 class CodeWriter
 {
 	File asmFile;
-	string currentCommand;
+	//string currentCommand;
     int labelCount=0;
 	string fileName;
 
