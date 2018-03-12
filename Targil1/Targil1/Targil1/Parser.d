@@ -49,44 +49,51 @@ class Parser
 	CommandType commandType()
 	{
 		string firstword;
-		do
+		//do
+		//{
+
+		if(currentCommand.length!=0)
+			firstword=currentCommand.split[0];
+		else
+			return CommandType.WHITE_SPACE;
+
+		if(startsWith(currentCommand,"//"))
+			return CommandType.COMMIT;
+
+		switch(firstword)
 		{
+			case "add":
+			case "sub":
+			case "neg":
+			case "eq":
+			case "gt":
+			case "lt":
+			case "and":
+			case "or":
+			case "not":
+				return CommandType.C_ARITHMETIC;
 
-			if(currentCommand.length!=0)
-                  firstword=currentCommand.split[0];
-			else
-				firstword="";
-                
-				switch(firstword)
+			case "push":
+				return CommandType.C_PUSH;
+
+			case "pop":
+				return CommandType.C_POP;
+
+			case "":
+				return CommandType.WHITE_SPACE;
+
+			default:
 				{
-					case "add":
-					case "sub":
-				    case "neg":
-					case "eq":
-					case "gt":
-					case "lt":
-					case "and":
-					case "or":
-					case "not":
-						return CommandType.C_ARITHMETIC;
-						
-					case "push":
-						return CommandType.C_PUSH;
-						
-					case "pop":
-						return CommandType.C_POP;
-
-					default:
-						{
-							advance();
-						    break;
-						}
+					return CommandType.C_ERROR;
+					break;
 				}
+		}
 
-		}while(hasMoreCommand());
+		//}while(hasMoreCommand());
 
 		return CommandType.C_ERROR;
 	}
+
 
 	string arg1()
 	{
