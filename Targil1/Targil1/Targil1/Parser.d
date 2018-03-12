@@ -105,7 +105,7 @@ class Parser
 	
 	void parse(CodeWriter codeWriter)
 	{
-		codeWriter.setFileName(vmFile.name.split('.')[0]);
+		codeWriter.setFileName(baseName(vmFile.name).split('.')[0]);
 		while(hasMoreCommand())
 		{
 			advance();
@@ -127,6 +127,5 @@ class Parser
 			}
 		}
 		vmFile.close();
-		codeWriter.close();
 	}
 }

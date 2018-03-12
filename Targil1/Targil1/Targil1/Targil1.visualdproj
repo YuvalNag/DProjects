@@ -431,7 +431,7 @@
  <Folder name="Targil1">
   <File path="CodeWriterModule.d" />
   <File path="CommandTypeEnum.d" />
-  <File path="DirParser.d" />
+  <File path="DirParserModule.d" />
   <File path="main.d" />
   <File path="Parser.d" />
  </Folder>

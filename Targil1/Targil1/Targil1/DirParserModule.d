@@ -1,8 +1,13 @@
 module DirParserModule;
 import Parser;
 import CodeWriterModule;
+import std.stdio;
+import std.algorithm;
+import std.array;
+import std.file;
+import std.string;
 import std.path;
-
+import std.uni;
 class DirParser
 {
 
@@ -16,5 +21,6 @@ class DirParser
 			Parser parser = new Parser(file.name);
 			parser.parse(codeWriter);
 		}
+		codeWriter.close();
 	}
 }

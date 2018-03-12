@@ -32,7 +32,7 @@ public:
 	void setFileName(string fileName)
 	{
 		this.fileName=fileName;
-		asmFile.writeln("//		"~fileName);
+		asmFile.writeln("//________________________"~fileName~"______________");
 	}
 
 	void writeArithmetic(string command)
