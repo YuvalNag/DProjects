@@ -53,6 +53,6 @@ int main(string[] argv)
    //
 
 	DirParser dir =new DirParser();
-	dir.vmTOasm("D:\\לימודים\\עקרונות שפות תכנות\\Exercises\\Targil2\\project 08\\ProgramFlow\\BasicLoop");
+	dir.vmTOasm("C:\\Users\\USER\\Desktop\\vm\\8");
     return 0;
 }

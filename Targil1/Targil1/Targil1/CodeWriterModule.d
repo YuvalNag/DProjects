@@ -496,7 +496,7 @@ private:
 	{
 		asmFile.writeln("@5");//A =5
 		asmFile.writeln("D=A");// D=5
-		asmFile.writeln("@"~argNumber);//A =n
+		asmFile.writeln("@"~to!string(argNumber));//A =n
 		asmFile.writeln("D=A+D");// D=5+n
 		asmFile.writeln("@SP");//A =SP
 		asmFile.writeln("D=A-D");// D=SP-(5+n)
@@ -537,7 +537,8 @@ private:
 
 	
 	}
-	void restoreSagment(strig sagment,int index)
+
+	void restoreSagment(string sagment,int index)
 	{
 		asmFile.writeln("@frame");//A =frame
 		asmFile.writeln("D=M");// D=RAM[frame]
