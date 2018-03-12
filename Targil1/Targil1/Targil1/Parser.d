@@ -83,6 +83,14 @@ class Parser
 				return CommandType.WHITE_SPACE;
 			case "goto":
 				return CommandType.C_GOTO;
+			case "call":
+				return CommandType.C_CALL;
+
+			case "function":
+				return CommandType.C_FUNCTION;
+
+			case "return":
+                  return CommandType.C_RETURN;
 			case "if-goto":
 				return CommandType.C_IF;
 			case "label":
@@ -104,14 +112,13 @@ class Parser
 	{
 		if (commandType()==CommandType.C_ARITHMETIC)
 			return currentCommand.split[0];
-		else if (   commandType()==CommandType.C_PUSH 
-				 || commandType()==CommandType.C_POP 
-				 || commandType()==CommandType.C_GOTO 
-				 || commandType()==CommandType.C_IF
-				 || commandType()==CommandType.C_LABEL)
+		//else if (   commandType()==CommandType.C_PUSH 
+		//         || commandType()==CommandType.C_POP 
+		//         || commandType()==CommandType.C_GOTO 
+		//         || commandType()==CommandType.C_IF
+		//         || commandType()==CommandType.C_LABEL)
 			return currentCommand.split[1];
-		else
-			return"ERROR";
+		
 	}
 
 	int arg2()
@@ -140,6 +147,15 @@ class Parser
 				case CommandType.C_LABEL:
 					codeWriter.writeFlowCommand(commandType(),arg1());
 					break;
+
+				case CommandType.C_CALL:
+				case CommandType.C_FUNCTION:
+					codeWriter.writeFunctionCommand(commandType(),arg1(),arg2());
+					break;
+
+                case CommandType.C_RETURN:
+				codeWriter.writeFunctionCommand(commandType(),"",0);
+
 
 			    case CommandType.COMMIT:
 				case CommandType.WHITE_SPACE:

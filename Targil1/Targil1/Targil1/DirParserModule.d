@@ -13,6 +13,10 @@ import std.algorithm.mutation : SwapStrategy;
 class DirParser
 {
 
+	
+
+
+
 	void vmTOasm(string dirPath)
 	{
 		CodeWriter codeWriter=new CodeWriter(dirPath,baseName(dirPath));
