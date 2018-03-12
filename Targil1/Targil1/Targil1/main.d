@@ -52,7 +52,8 @@ int main(string[] argv)
    //parser.parse(codeWriter);
    //
 
+
 	DirParser dir =new DirParser();
-	dir.vmTOasm("D:\\לימודים\\עקרונות שפות תכנות\\Exercises\\Targil2\\project 08\\ProgramFlow\\BasicLoop");
+	dir.vmTOasm("C:\\Users\\nissy34\\OneDrive - g.jct.ac.il\\semester B\\Lang\\Exercises\\Targil2\\project 08\\FunctionCalls\\StaticsTest");
     return 0;
 }

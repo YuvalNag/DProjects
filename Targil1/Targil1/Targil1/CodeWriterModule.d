@@ -35,6 +35,28 @@ public:
 		asmFile.writeln("//________________________"~fileName~"______________");
 	}
 
+	void writeFunctionCommand(CommandType commandType,string funcName,int num)
+	{
+		//label~="_"~fileName;
+		switch(commandType)
+		{
+			case CommandType.C_CALL:
+				asmFile.writeln("\n//call ",funcName," ",to!string(num));
+				call(funcName,num);
+				break;
+			case CommandType.C_FUNCTION:
+				asmFile.writeln("\n//function ",funcName," ",to!string(num));
+				declareFunction(funcName,num);
+				break;
+			case CommandType.C_RETURN:
+				asmFile.writeln("\n//return");
+				writeReturn();
+				break;
+			default:
+				break;
+		}
+
+	}
 	void writeFlowCommand(CommandType commandType,string label)
 	{
 		label~="_"~fileName;
@@ -496,7 +518,7 @@ private:
 	{
 		asmFile.writeln("@5");//A =5
 		asmFile.writeln("D=A");// D=5
-		asmFile.writeln("@"~argNumber);//A =n
+		asmFile.writeln("@"~to!string(argNumber));//A =n
 		asmFile.writeln("D=A+D");// D=5+n
 		asmFile.writeln("@SP");//A =SP
 		asmFile.writeln("D=A-D");// D=SP-(5+n)
@@ -518,6 +540,7 @@ private:
 		asmFile.writeln("@frame");//A =frame
 		asmFile.writeln("M=D");// RAM[frame]=RAM[LCL]
 		
+
 		restoreSagment("RET",5);//RET=*(frame-5)	
 
 		
@@ -533,19 +556,23 @@ private:
 		restoreSagment("ARG",3);//ARG=*(frame-3)	
 		restoreSagment("LCL",4);//LCL=*(frame-4)	
 
-		writeGoto("RET");
+		
+
+		asmFile.writeln("@RET");
+		asmFile.writeln("A=M");
+		asmFile.writeln("0;JMP");
 
 	
 	}
-	void restoreSagment(strig sagment,int index)
+	void restoreSagment(string sagment,int index)
 	{
 		asmFile.writeln("@frame");//A =frame
 		asmFile.writeln("D=M");// D=RAM[frame]
 		asmFile.writeln("@"~to!string(index));//A =index
-		asmFile.writeln("A=D-A");// A=frame-index
-		asmFile.writeln("D=M");// D=RAM[frame-index]
+		asmFile.writeln("A=D-A");// A=RAM[frame]-index
+		asmFile.writeln("D=M");// D=RAM[RAM[frame]-index]
 		asmFile.writeln("@"~sagment);//A =sagment
-		asmFile.writeln("M=D");// RAM[sagment]=RAM[frame-index]
+		asmFile.writeln("M=D");// RAM[sagment]=RAM[RAM[frame]-index]
 
 	}
 }
