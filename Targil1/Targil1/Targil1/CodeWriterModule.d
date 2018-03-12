@@ -25,15 +25,14 @@ class CodeWriter
 public:
 	this(string path,string fileName)
 	{
-
-		setFileName(fileName);
-
 		asmFile=File(chainPath(chomp(path),fileName~".asm"), "w");
+
 	}
 
 	void setFileName(string fileName)
 	{
 		this.fileName=fileName;
+		asmFile.writeln("//		"~fileName);
 	}
 
 	void writeArithmetic(string command)
