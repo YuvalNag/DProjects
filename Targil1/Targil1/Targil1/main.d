@@ -54,10 +54,10 @@ int main(string[] argv)
 
 
 	DirParser dir =new DirParser();
-<<<<<<< HEAD
+
 	dir.vmTOasm("C:\\Users\\USER\\Desktop\\vm\\8");
-=======
-	dir.vmTOasm("C:\\Users\\nissy34\\OneDrive - g.jct.ac.il\\semester B\\Lang\\Exercises\\Targil2\\project 08\\FunctionCalls\\StaticsTest");
->>>>>>> 1fa9d67402affcc1f9b393e0e52d1d6518fe9d7b
+
+	//dir.vmTOasm("C:\\Users\\nissy34\\OneDrive - g.jct.ac.il\\semester B\\Lang\\Exercises\\Targil2\\project 08\\FunctionCalls\\StaticsTest");
+
     return 0;
 }

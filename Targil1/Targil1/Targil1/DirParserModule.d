@@ -20,9 +20,9 @@ class DirParser
 	void vmTOasm(string dirPath)
 	{
 		CodeWriter codeWriter=new CodeWriter(dirPath,baseName(dirPath));
-	   if(exists(dirPath~"Sys.vm"))
+	   if(exists(chomp(dirPath)~"//Sys.vm"))
 		{
-			File file = File(chomp(dirPath~"Sys.vm"), "r");
+			File file = File(chomp(dirPath)~"//Sys.vm", "r");
 			writeln(file.name);
 			Parser parser = new Parser(file.name);
 			parser.parse(codeWriter);
