@@ -81,7 +81,12 @@ class Parser
 
 			case "":
 				return CommandType.WHITE_SPACE;
-
+			case "goto":
+				return CommandType.C_GOTO;
+			case "if-goto":
+				return CommandType.C_IF;
+			case "label":
+				return CommandType.C_LABEL;
 			default:
 				{
 					return CommandType.C_ERROR;
@@ -99,7 +104,11 @@ class Parser
 	{
 		if (commandType()==CommandType.C_ARITHMETIC)
 			return currentCommand.split[0];
-		else if (commandType()==CommandType.C_PUSH || commandType()==CommandType.C_POP)
+		else if (   commandType()==CommandType.C_PUSH 
+				 || commandType()==CommandType.C_POP 
+				 || commandType()==CommandType.C_GOTO 
+				 || commandType()==CommandType.C_IF
+				 || commandType()==CommandType.C_LABEL)
 			return currentCommand.split[1];
 		else
 			return"ERROR";
@@ -125,6 +134,16 @@ class Parser
 				case CommandType.C_POP:
 				case CommandType.C_PUSH:
 					codeWriter.writePushPop(commandType(),arg1(),arg2());
+					break;
+				case CommandType.C_GOTO:
+				case CommandType.C_IF:
+				case CommandType.C_LABEL:
+					codeWriter.writeFlowCommand(commandType(),arg1());
+					break;
+
+			    case CommandType.COMMIT:
+				case CommandType.WHITE_SPACE:
+					continue;
 					break;
 				case CommandType.C_ERROR:
 					writeln("error while reading the file");

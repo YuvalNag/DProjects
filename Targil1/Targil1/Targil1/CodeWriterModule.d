@@ -35,6 +35,28 @@ public:
 		asmFile.writeln("//________________________"~fileName~"______________");
 	}
 
+	void writeFlowCommand(CommandType commandType,string label)
+	{
+		label~="_"~fileName;
+		switch(commandType)
+		{
+			case CommandType.C_GOTO:
+				asmFile.writeln("\n//GOTO");
+				writeGoto(label);
+				break;
+			case CommandType.C_IF:
+				asmFile.writeln("\n//IF");
+				writeIf(label);
+				break;
+			case CommandType.C_LABEL:
+				asmFile.writeln("\n//LABEL");
+				writeLabel(label);
+				break;
+			default:
+				break;
+		}
+	
+	}
 	void writeArithmetic(string command)
 	{
 		switch(command)
@@ -79,7 +101,6 @@ public:
 				break;
 		}
 	}
-
 	void writePushPop(CommandType commandType,string segment,int index)
 	{
 
@@ -424,5 +445,25 @@ private:
 
 	}
 
+	void writeGoto(string label)
+	{
+		asmFile.writeln("@"~label);
+		asmFile.writeln("0;JMP");
+	}
+	void writeIf(string label)
+	{	 
+		asmFile.writeln("("~label~")");
+	}
+		
+
+	void writeLabel(string label)
+	{	 
+		decRegister("SP",1);
+		asmFile.writeln("A=M");
+		asmFile.writeln("D=M");
+		asmFile.writeln("@",label);
+		asmFile.writeln("D;JNE");
+	}
+	
 	
 }
