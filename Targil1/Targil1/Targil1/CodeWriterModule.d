@@ -450,13 +450,13 @@ private:
 		asmFile.writeln("@"~label);
 		asmFile.writeln("0;JMP");
 	}
-	void writeIf(string label)
+	void writeLabel(string label)
 	{	 
 		asmFile.writeln("("~label~")");
 	}
 		
 
-	void writeLabel(string label)
+	void writeIf(string label)
 	{	 
 		decRegister("SP",1);
 		asmFile.writeln("A=M");
