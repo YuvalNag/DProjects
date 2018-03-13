@@ -20,21 +20,23 @@ class DirParser
 	void vmTOasm(string dirPath)
 	{
 		CodeWriter codeWriter=new CodeWriter(dirPath,baseName(dirPath));
-	   if(exists(chomp(dirPath)~"//Sys.vm"))
+	   if(exists(chomp(dirPath)~"\\Sys.vm"))
 		{
-			File file = File(chomp(dirPath)~"//Sys.vm", "r");
-			writeln(file.name);
+			File file = File(chomp(dirPath)~"\\Sys.vm", "r");
+			writeln("parsing - ",baseName(file.name));
 			Parser parser = new Parser(file.name);
 			parser.parse(codeWriter);
 		}
 		auto Files = dirEntries(chomp(dirPath), SpanMode.shallow).filter!(f => f.name.endsWith(".vm") && f.isFile && baseName(f.name) != "Sys.vm");
 		foreach (file; Files)
 		{
-				writeln(file.name);
+				writeln("parsing - ",baseName(file.name));
 				Parser parser = new Parser(file.name);
 				parser.parse(codeWriter);
 		}
 		codeWriter.close();
+		writeln("parsing finished");
+		readln();
 	}
 }
 	

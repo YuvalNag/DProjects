@@ -37,21 +37,24 @@ public:
 
 	void writeFunctionCommand(CommandType commandType,string funcName,int num)
 	{
-		//label~="_"~fileName;
+		
 		switch(commandType)
 		{
 			case CommandType.C_CALL:
-				asmFile.writeln("\n//call ",funcName," ",to!string(num));
+				asmFile.writeln("\n//call ",funcName~" "~to!string(num));
 				call(funcName,num);
 				break;
+			
 			case CommandType.C_FUNCTION:
-				asmFile.writeln("\n//function ",funcName," ",to!string(num));
+				asmFile.writeln("\n//function ",funcName~" "~to!string(num));
 				declareFunction(funcName,num);
 				break;
+			
 			case CommandType.C_RETURN:
 				asmFile.writeln("\n//return");
 				writeReturn();
 				break;
+			
 			default:
 				break;
 		}
@@ -66,14 +69,17 @@ public:
 				asmFile.writeln("\n//GOTO");
 				writeGoto(label);
 				break;
+			
 			case CommandType.C_IF:
 				asmFile.writeln("\n//IF");
 				writeIf(label);
 				break;
+			
 			case CommandType.C_LABEL:
 				asmFile.writeln("\n//LABEL");
 				writeLabel(label);
 				break;
+			
 			default:
 				break;
 		}
@@ -87,38 +93,47 @@ public:
 				asmFile.writeln("\n//add");
 				add();
 				break;
+		
 			case "sub":
 				asmFile.writeln("\n//sub");
 				sub();
 				break;
-		    case "neg":
+		    
+			case "neg":
 				asmFile.writeln("\n//neg");
 				neg();
 				break;
+			
 			case "eq":
 				asmFile.writeln("\n//eq");
 				booleanOp(toUpper(command));
 				break;
+			
 			case "gt":
 				asmFile.writeln("\n//gt");
 				booleanOp(toUpper(command));
 				break;
+			
 			case "lt":
 				asmFile.writeln("\n//lt");
 				booleanOp(toUpper(command));
 				break;
+			
 			case "and":
 				asmFile.writeln("\n//and");
 				and();
 				break;
+			
 			case "or":
 				asmFile.writeln("\n//or");
 				or();
 				break;
+			
 			case "not":
 				asmFile.writeln("\n//not");
 				not();
 				break;
+			
 			default:
 				break;
 		}
@@ -244,73 +259,84 @@ public:
 				break;
 		}
 	}
+	
 	void close()
 	{
 		asmFile.close();
 	}
+
 private:
 	//_________________________________________________
-	void incRegister(string register ,int index)
+
+	void incSP()
 	{
-		asmFile.writeln("@"~register);
-		asmFile.writeln("M=M+"~to!string(index));
+		asmFile.writeln("@SP");
+		asmFile.writeln("M=M+1");
 	}
-	void decRegister(string register ,int index)
+
+	void decSP()
 	{
-		asmFile.writeln("@"~register);
-		asmFile.writeln("M=M-"~to!string(index));
+		asmFile.writeln("@SP");
+		asmFile.writeln("M=M-1");
 	}
+
 	void binaryOp()
 	{
-		decRegister("SP",1);
+		decSP();
 		asmFile.writeln("A=M");//A=RAM[SP] - addr of the top of the stock
 		asmFile.writeln("D=M");//D=RAM[RAM[SP]] -the value at the top of the stock -first arg
-		decRegister("SP",1);
+		decSP();
 		asmFile.writeln("A=M");
 	}
+
 	void unaryOp()
 	{
-		decRegister("SP",1);
+		decSP();
 		asmFile.writeln("A=M");
 	}
+
     void add()
 	{
 		binaryOp();
 		asmFile.writeln("M=D+M");
-		incRegister("SP",1);
+		incSP();
 	}
+
 	void sub()
 	{
 		binaryOp();
 		asmFile.writeln("M=M-D");
-		incRegister("SP",1);
+		incSP();
 	}
+
 	void and()
 	{
 		binaryOp();
 		asmFile.writeln("M=M&D");
-		incRegister("SP",1);
+		incSP();
 	}
+
 	void or()
 	{
 		binaryOp();
 		asmFile.writeln("M=D|M");
-		incRegister("SP",1);
+		incSP();
 	}
+
 	void not()
 	{
 		unaryOp();
 		asmFile.writeln("M=!M");
-		incRegister("SP",1);
+		incSP();
 	}
+
 	void neg()
 	{
 		unaryOp();
 		asmFile.writeln("M=-M");
-		incRegister("SP",1);
+		incSP();
 	}
 
-	
 	void booleanOp(string op)
 	{
 		int label=labelCount++;
@@ -329,7 +355,7 @@ private:
 		asmFile.writeln("A=M");
 		asmFile.writeln("M=-1");
 		asmFile.writeln("(END_"~to!string(label)~")");
-		incRegister("SP",1);
+		incSP();
 	}
 	
 	//____________________________________________________________________________________________________________________________________________________________________________________________________________________________
@@ -346,7 +372,7 @@ private:
 		asmFile.writeln("M=D");//R15 =RAM[Sagment] + index
 
 
-		decRegister("SP",1);
+		decSP();
 		asmFile.writeln("@SP");
 		asmFile.writeln("A=M");
 		asmFile.writeln("D=M");//D=RAM[SP]
@@ -370,7 +396,7 @@ private:
 		asmFile.writeln("A=M");
 
 		asmFile.writeln("M=D");// RAM[SP]=RAM[RAM[Sagment] + index]
-		incRegister("SP",1);
+		incSP();
 
 	}
 
@@ -383,7 +409,7 @@ private:
 		asmFile.writeln("@R15");
 		asmFile.writeln("M=D");//R15 =5 + index
 
-		decRegister("SP",1);
+		decSP();
 		asmFile.writeln("@SP");
 		asmFile.writeln("A=M");
 		asmFile.writeln("D=M");//D=RAM[SP]
@@ -404,7 +430,7 @@ private:
 		asmFile.writeln("@SP");
 		asmFile.writeln("A=M");
 		asmFile.writeln("M=D");// RAM[SP]=RAM[5 + index]
-		incRegister("SP",1);
+		incSP();
 	}
 
 	void pushConstent(int value)
@@ -414,12 +440,13 @@ private:
 		asmFile.writeln("@SP");
 		asmFile.writeln("A=M");
 		asmFile.writeln("M=D");// RAM[SP]=value
-		incRegister("SP",1);
+		incSP();
 	}
+
 	void popPointer(int index)
 	{
 		
-		decRegister("SP",1);
+		decSP();
 		asmFile.writeln("@SP");
 		asmFile.writeln("A=M");
 		asmFile.writeln("D=M");
@@ -436,9 +463,9 @@ private:
 	void pushPointer(int index)
 	{
 		if(index==0)
-		    push("THIS");//A =THIS
+		    push("THIS");
 		else
-			push("THAT");//A =THAT
+			push("THAT");
 
 	}
 	void pushStatic(int index)
@@ -449,12 +476,13 @@ private:
 		asmFile.writeln("@SP");
 		asmFile.writeln("A=M");
 		asmFile.writeln("M=D");
-		incRegister("SP",1);
+		incSP();
 	}
+
 	void popStatic(int index)
 	{
 		// pop static 0 from 'ClassA.vm' in asm:
-		decRegister("SP",1);
+		decSP();
 		asmFile.writeln("A=M");
 		asmFile.writeln("D=M");
 		asmFile.writeln("@"~fileName~"."~to!string(index));  
@@ -467,6 +495,7 @@ private:
 		asmFile.writeln("@"~label);
 		asmFile.writeln("0;JMP");
 	}
+
 	void writeLabel(string label)
 	{	 
 		asmFile.writeln("("~label~")");
@@ -475,7 +504,7 @@ private:
 
 	void writeIf(string label)
 	{	 
-		decRegister("SP",1);
+		decSP();
 		asmFile.writeln("A=M");
 		asmFile.writeln("D=M");
 		asmFile.writeln("@",label);
@@ -489,7 +518,7 @@ private:
 		asmFile.writeln("@SP");
 		asmFile.writeln("A=M");
 		asmFile.writeln("M=D");// RAM[SP]=RAM[addr]
-		incRegister("SP",1);
+		incSP();
 	}
 
 	void call(string funcName,int argNumber)
@@ -501,7 +530,7 @@ private:
 		asmFile.writeln("@SP");
 		asmFile.writeln("A=M");
 		asmFile.writeln("M=D");// RAM[SP]=value
-		incRegister("SP",1);
+		incSP();
 
 		asmFile.writeln("\n","//push LCL");
 		push("LCL");
@@ -529,6 +558,7 @@ private:
 
 		writeLabel(returnLabel);
 	}
+
 	void argAssiment(int argNumber)
 	{
 		asmFile.writeln("@5");//A =5
@@ -540,6 +570,7 @@ private:
 		asmFile.writeln("@ARG");//A =ARG
 		asmFile.writeln("M=D");// RAM[ARG]=D
 	}
+
 	void declareFunction(string funcName,int localNumber)
 	{
 		writeLabel(funcName);
@@ -550,8 +581,10 @@ private:
 
 	void writeReturn()
 	{
-        string temp="temp"~to!string(labelCount++);
-		string ret ="ret"~to!string(labelCount++);
+		//string temp="temp"~to!string(labelCount++);
+		//string ret ="ret"~to!string(labelCount++);
+		string temp="R13";
+		string ret ="R14";
 
 		asmFile.writeln("\n","//FRAME=LCL");
 		asmFile.writeln("@LCL");//A =LCL

@@ -49,9 +49,7 @@ class Parser
 	CommandType commandType()
 	{
 		string firstword;
-		//do
-		//{
-
+		
 		if(currentCommand.length!=0)
 			firstword=currentCommand.split[0];
 		else
@@ -81,8 +79,7 @@ class Parser
 
 			case "":
 				return CommandType.WHITE_SPACE;
-			case "goto":
-				return CommandType.C_GOTO;
+		
 			case "call":
 				return CommandType.C_CALL;
 
@@ -91,18 +88,22 @@ class Parser
 
 			case "return":
                   return CommandType.C_RETURN;
+
+			case "goto":
+				return CommandType.C_GOTO;
+			
 			case "if-goto":
 				return CommandType.C_IF;
+			
 			case "label":
 				return CommandType.C_LABEL;
+			
 			default:
-				{
-					return CommandType.C_ERROR;
+				return CommandType.C_ERROR;
 					break;
-				}
+				
 		}
 
-		//}while(hasMoreCommand());
 
 		return CommandType.C_ERROR;
 	}
@@ -138,10 +139,12 @@ class Parser
 				case CommandType.C_ARITHMETIC:
 					codeWriter.writeArithmetic(arg1());
 					break;
+				
 				case CommandType.C_POP:
 				case CommandType.C_PUSH:
 					codeWriter.writePushPop(commandType(),arg1(),arg2());
 					break;
+				
 				case CommandType.C_GOTO:
 				case CommandType.C_IF:
 				case CommandType.C_LABEL:
@@ -154,20 +157,24 @@ class Parser
 					break;
 
                 case CommandType.C_RETURN:
-				codeWriter.writeFunctionCommand(commandType(),"",0);
+			     	codeWriter.writeFunctionCommand(commandType(),"",0);
+					break;
 
 
 			    case CommandType.COMMIT:
 				case CommandType.WHITE_SPACE:
 					continue;
 					break;
+				
 				case CommandType.C_ERROR:
 					writeln("error while reading the file");
 					readln();
+				
 				default:
 					break;
 			}
 		}
+
 		vmFile.close();
 	}
 }
