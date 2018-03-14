@@ -29,6 +29,24 @@ public:
 
 	}
 
+	void init()
+	{
+		asmFile.writeln("//________________________init______________");
+
+		asmFile.writeln("//init");
+		asmFile.writeln("//SP=256");
+		asmFile.writeln("@256");
+		asmFile.writeln("D=A");
+		asmFile.writeln("@SP");
+		asmFile.writeln("M=D");
+
+
+		asmFile.writeln("\n//function Sys.init 0");
+        call("Sys.init",0);
+
+
+	}
+
 	void setFileName(string fileName)
 	{
 		this.fileName=fileName;
@@ -554,6 +572,7 @@ private:
 		asmFile.writeln("M=D");// RAM[LCL]=SP
 
 		asmFile.writeln("\n","//goto ",funcName);
+		
 		writeGoto(funcName);
 
 		writeLabel(returnLabel);

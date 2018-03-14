@@ -57,7 +57,24 @@ int main(string[] argv)
 
 	//dir.vmTOasm("C:\\Users\\USER\\Desktop\\vm\\8");
 
+
+    //targil 1
+	dir.vmTOasm("C:\\Users\\nissy34\\OneDrive - g.jct.ac.il\\semester B\\Lang\\Exercises\\Targil1\\project 07\\MemoryAccess\\Basictest");
+	dir.vmTOasm("C:\\Users\\nissy34\\OneDrive - g.jct.ac.il\\semester B\\Lang\\Exercises\\Targil1\\project 07\\MemoryAccess\\PointerTest");
+	dir.vmTOasm("C:\\Users\\nissy34\\OneDrive - g.jct.ac.il\\semester B\\Lang\\Exercises\\Targil1\\project 07\\MemoryAccess\\StaticTest");
+	dir.vmTOasm("C:\\Users\\nissy34\\OneDrive - g.jct.ac.il\\semester B\\Lang\\Exercises\\Targil1\\project 07\\SimpleAdd");
+	dir.vmTOasm("C:\\Users\\nissy34\\OneDrive - g.jct.ac.il\\semester B\\Lang\\Exercises\\Targil1\\project 07\\StackArithmetic\\SimpleAdd");
+	dir.vmTOasm("C:\\Users\\nissy34\\OneDrive - g.jct.ac.il\\semester B\\Lang\\Exercises\\Targil1\\project 07\\StackArithmetic\\StackTest");
+
+
+	//targil 2
+	dir.vmTOasm("C:\\Users\\nissy34\\OneDrive - g.jct.ac.il\\semester B\\Lang\\Exercises\\Targil2\\project 08\\FunctionCalls\\FibonacciElement");
+	dir.vmTOasm("C:\\Users\\nissy34\\OneDrive - g.jct.ac.il\\semester B\\Lang\\Exercises\\Targil2\\project 08\\FunctionCalls\\SimpleFunction");
 	dir.vmTOasm("C:\\Users\\nissy34\\OneDrive - g.jct.ac.il\\semester B\\Lang\\Exercises\\Targil2\\project 08\\FunctionCalls\\StaticsTest");
+	dir.vmTOasm("C:\\Users\\nissy34\\OneDrive - g.jct.ac.il\\semester B\\Lang\\Exercises\\Targil2\\project 08\\ProgramFlow\\FibonacciSeries");
+	dir.vmTOasm("C:\\Users\\nissy34\\OneDrive - g.jct.ac.il\\semester B\\Lang\\Exercises\\Targil2\\project 08\\ProgramFlow\\BasicLoop");
+
+
 
     return 0;
 }

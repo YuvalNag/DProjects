@@ -22,12 +22,9 @@ class DirParser
 		CodeWriter codeWriter=new CodeWriter(dirPath,baseName(dirPath));
 	   if(exists(chomp(dirPath)~"\\Sys.vm"))
 		{
-			File file = File(chomp(dirPath)~"\\Sys.vm", "r");
-			writeln("parsing - ",baseName(file.name));
-			Parser parser = new Parser(file.name);
-			parser.parse(codeWriter);
+			codeWriter.init();
 		}
-		auto Files = dirEntries(chomp(dirPath), SpanMode.shallow).filter!(f => f.name.endsWith(".vm") && f.isFile && baseName(f.name) != "Sys.vm");
+		auto Files = dirEntries(chomp(dirPath), SpanMode.shallow).filter!(f => f.name.endsWith(".vm") && f.isFile /*&& baseName(f.name) != "Sys.vm"*/);
 		foreach (file; Files)
 		{
 				writeln("parsing - ",baseName(file.name));
