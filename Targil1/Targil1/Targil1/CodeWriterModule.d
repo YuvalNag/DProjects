@@ -41,7 +41,7 @@ public:
 		asmFile.writeln("M=D");
 
 
-		asmFile.writeln("\n//function Sys.init 0");
+		asmFile.writeln("\n//call function Sys.init 0");
         call("Sys.init",0);
 
 
@@ -630,7 +630,7 @@ private:
 		asmFile.writeln("\n","//ARG=*(FRAME-2)");
 		restoreSagment("THIS",2,temp);//THIS=*(frame-2)	
 
-		asmFile.writeln("\n","//THAT=*(FRAME-3)");
+		asmFile.writeln("\n","//ARG=*(FRAME-3)");
 		restoreSagment("ARG",3,temp);//ARG=*(frame-3)	
 
 		asmFile.writeln("\n","//LCL=*(FRAME-4)");
