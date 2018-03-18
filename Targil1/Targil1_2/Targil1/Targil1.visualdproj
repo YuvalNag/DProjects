@@ -428,7 +428,7 @@
   <postBuildCommand />
   <filesToClean>*.obj;*.cmd;*.build;*.json;*.dep;*.tlog</filesToClean>
  </Config>
- <Folder name="Targil1">
+ <Folder name="Targil1_2">
   <File path="CodeWriterModule.d" />
   <File path="CommandTypeEnum.d" />
   <File path="DirParserModule.d" />
