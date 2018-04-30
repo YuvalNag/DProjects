@@ -17,7 +17,6 @@ import std.ascii;
 class CodeWriter
 {
 	File asmFile;
-	//string currentCommand;
     int labelCount=0;
 	string fileName;
 
@@ -80,7 +79,7 @@ public:
 	}
 	void writeFlowCommand(CommandType commandType,string label)
 	{
-		label~="_"~fileName;
+		label=label~"$"~fileName;
 		switch(commandType)
 		{
 			case CommandType.C_GOTO:
@@ -637,7 +636,7 @@ private:
 		restoreSagment("LCL",4,temp);//LCL=*(frame-4)	
 
 		
-       asmFile.writeln("\n","//goto RET");
+        asmFile.writeln("\n","//goto RET");
 		asmFile.writeln("@"~ret);
 		asmFile.writeln("A=M");
 		asmFile.writeln("0;JMP");

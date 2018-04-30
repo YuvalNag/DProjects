@@ -13,10 +13,6 @@ import std.algorithm.mutation : SwapStrategy;
 class DirParser
 {
 
-	
-
-
-
 	void vmTOasm(string dirPath)
 	{
 		CodeWriter codeWriter=new CodeWriter(dirPath,baseName(dirPath));
@@ -24,7 +20,7 @@ class DirParser
 		{
 			codeWriter.init();
 		}
-		auto Files = dirEntries(chomp(dirPath), SpanMode.shallow).filter!(f => f.name.endsWith(".vm") && f.isFile /*&& baseName(f.name) != "Sys.vm"*/);
+		auto Files = dirEntries(chomp(dirPath), SpanMode.shallow).filter!(f => f.name.endsWith(".vm") && f.isFile);
 		foreach (file; Files)
 		{
 				writeln("parsing - ",baseName(file.name));
