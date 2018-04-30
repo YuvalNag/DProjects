@@ -1,0 +1,22 @@
+
+class Main {
+	
+    /** Initializes a new game and starts it. */    
+   
+   function void main() {
+       var Game game;
+	   	
+	   let game=Game.new();
+	
+	   do game.choosePos();
+	 
+	   do game.dispose();
+	   return;
+    }
+	
+
+	
+     
+
+	 
+}

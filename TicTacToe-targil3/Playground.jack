@@ -1,0 +1,132 @@
+class Playground {
+	
+	field Array X,Y;
+	/** Initializes a new game and starts it. */    
+	
+	constructor Playground new()
+	{
+	  let X=Array.new(9);
+	  let Y=Array.new(9);
+	  let X[0]=201;
+	  let X[3]=201;
+	  let X[6]=201;
+	  let X[1]=256;
+	  let X[4]=256;
+	  let X[7]=256;
+	  let X[2]=311;
+	  let X[5]=311;
+	  let X[8]=311;
+      
+	  let Y[0]=73;
+	  let Y[1]=73;
+	  let Y[2]=73;
+	  let Y[3]=128;
+	  let Y[4]=128;
+	  let Y[5]=128;
+	  let Y[6]=183;
+	  let Y[7]=183;
+	  let Y[8]=183;
+	  
+	  return this;
+	}
+     
+     method void dispose(){
+	  do X.dispose();
+	  do Y.dispose();
+	  do Memory.deAlloc(this);
+	  return;
+	 }
+	method void drawBoard() {
+     
+		
+	    do Screen.setColor(false);
+		do Screen.drawRectangle(160,48,350,208);
+		
+		do Screen.setColor(true);
+		
+		do Screen.drawRectangle(226,48,231,208);/* |
+												   | */
+		do Screen.drawRectangle(281,48,286,208);/*
+													 |
+													 | */
+		do Screen.drawRectangle(176,98,336,103);//--
+		
+		do Screen.drawRectangle(176,153,336,157);//__
+		//do drawSq(1,true);
+		return;
+     }
+
+	 method void moveSq(int fromPos,int toPos){
+	   //add check 
+	   do drawSq(fromPos,false);
+	   do drawSq(toPos,true);
+	   return;
+	 }
+	 
+	 
+	  method void erasePos(int pos){
+	     do Screen.setColor(false); 
+		 let pos=pos-1;
+		 do Screen.drawRectangle(X[pos]-19,Y[pos]-20,X[pos]+19,Y[pos]+20);
+	     return;
+	 }
+	 
+	 
+	 method void drawSq(int pos,boolean black) {
+	 
+	   var int i, centerX,centerY;
+	   let pos=pos-1;
+     
+	   do Screen.setColor(black);
+	
+	   let i=1;
+       while(i<4){
+	     let centerX = X[pos];
+		 let centerY = Y[pos];
+	     do Screen.drawLine(centerX +i+20,centerY+22,centerX +i+20,centerY-22);
+		 do Screen.drawLine(centerX -22,centerY+i+20,centerX +22,centerY+i+20);
+		 do Screen.drawLine(centerX -i-20,centerY+22,centerX -i-20,centerY-22);
+		 do Screen.drawLine(centerX -22,centerY-i-20,centerX +22,centerY-i-20);
+	     let i=i+1;
+	   }
+	   
+		return;
+     }
+	 
+	 
+	method void drawO(int pos) {
+	
+	    let pos=pos-1;
+	    do Screen.setColor(true);
+		do Screen.drawCircle(X[pos],Y[pos],18);
+		do Screen.setColor(false);
+		do Screen.drawCircle(X[pos],Y[pos],13);
+		return;
+	}
+	
+	method void drawX(int pos)
+	{
+	  var int centerX,centerY, y1,y2,i;
+      
+	  let pos=pos-1;
+	  
+	  let centerX=X[pos];
+      let centerY=Y[pos];
+	  let y1=centerY+13;
+	  let y2=centerY-13;
+	  
+	   do Screen.setColor(true);
+	  
+	  let i=8;
+       while(i<15){
+	     do Screen.drawLine(centerX -i,y1,centerX +i,y2);
+		 do Screen.drawLine(centerX +i,y1,centerX -i,y2);
+	     let i=i+1;
+	   }
+      	  
+	
+	  return;
+	}
+	
+	
+}

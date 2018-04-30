@@ -1,0 +1,489 @@
+function Playground.new 0
+push constant 2
+call Memory.alloc 1
+pop pointer 0
+push constant 9
+call Array.new 1
+pop this 0
+push constant 9
+call Array.new 1
+pop this 1
+push constant 0
+push this 0
+add
+push constant 201
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 3
+push this 0
+add
+push constant 201
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 6
+push this 0
+add
+push constant 201
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 1
+push this 0
+add
+push constant 256
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 4
+push this 0
+add
+push constant 256
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 7
+push this 0
+add
+push constant 256
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 2
+push this 0
+add
+push constant 311
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 5
+push this 0
+add
+push constant 311
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 8
+push this 0
+add
+push constant 311
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 0
+push this 1
+add
+push constant 73
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 1
+push this 1
+add
+push constant 73
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 2
+push this 1
+add
+push constant 73
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 3
+push this 1
+add
+push constant 128
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 4
+push this 1
+add
+push constant 128
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 5
+push this 1
+add
+push constant 128
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 6
+push this 1
+add
+push constant 183
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 7
+push this 1
+add
+push constant 183
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 8
+push this 1
+add
+push constant 183
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push pointer 0
+return
+function Playground.dispose 0
+push argument 0
+pop pointer 0
+push this 0
+call Array.dispose 1
+pop temp 0
+push this 1
+call Array.dispose 1
+pop temp 0
+push pointer 0
+call Memory.deAlloc 1
+pop temp 0
+push constant 0
+return
+function Playground.drawBoard 0
+push argument 0
+pop pointer 0
+push constant 0
+call Screen.setColor 1
+pop temp 0
+push constant 160
+push constant 48
+push constant 350
+push constant 208
+call Screen.drawRectangle 4
+pop temp 0
+push constant 0
+not
+call Screen.setColor 1
+pop temp 0
+push constant 226
+push constant 48
+push constant 231
+push constant 208
+call Screen.drawRectangle 4
+pop temp 0
+push constant 281
+push constant 48
+push constant 286
+push constant 208
+call Screen.drawRectangle 4
+pop temp 0
+push constant 176
+push constant 98
+push constant 336
+push constant 103
+call Screen.drawRectangle 4
+pop temp 0
+push constant 176
+push constant 153
+push constant 336
+push constant 157
+call Screen.drawRectangle 4
+pop temp 0
+push constant 0
+return
+function Playground.moveSq 0
+push argument 0
+pop pointer 0
+push pointer 0
+push argument 1
+push constant 0
+call Playground.drawSq 3
+pop temp 0
+push pointer 0
+push argument 2
+push constant 0
+not
+call Playground.drawSq 3
+pop temp 0
+push constant 0
+return
+function Playground.erasePos 0
+push argument 0
+pop pointer 0
+push constant 0
+call Screen.setColor 1
+pop temp 0
+push argument 1
+push constant 1
+sub
+pop argument 1
+push argument 1
+push this 0
+add
+pop pointer 1
+push that 0
+push constant 19
+sub
+push argument 1
+push this 1
+add
+pop pointer 1
+push that 0
+push constant 20
+sub
+push argument 1
+push this 0
+add
+pop pointer 1
+push that 0
+push constant 19
+add
+push argument 1
+push this 1
+add
+pop pointer 1
+push that 0
+push constant 20
+add
+call Screen.drawRectangle 4
+pop temp 0
+push constant 0
+return
+function Playground.drawSq 3
+push argument 0
+pop pointer 0
+push argument 1
+push constant 1
+sub
+pop argument 1
+push argument 2
+call Screen.setColor 1
+pop temp 0
+push constant 1
+pop local 0
+label WHILE_EXP0
+push local 0
+push constant 4
+lt
+not
+if-goto WHILE_END0
+push argument 1
+push this 0
+add
+pop pointer 1
+push that 0
+pop local 1
+push argument 1
+push this 1
+add
+pop pointer 1
+push that 0
+pop local 2
+push local 1
+push local 0
+add
+push constant 20
+add
+push local 2
+push constant 22
+add
+push local 1
+push local 0
+add
+push constant 20
+add
+push local 2
+push constant 22
+sub
+call Screen.drawLine 4
+pop temp 0
+push local 1
+push constant 22
+sub
+push local 2
+push local 0
+add
+push constant 20
+add
+push local 1
+push constant 22
+add
+push local 2
+push local 0
+add
+push constant 20
+add
+call Screen.drawLine 4
+pop temp 0
+push local 1
+push local 0
+sub
+push constant 20
+sub
+push local 2
+push constant 22
+add
+push local 1
+push local 0
+sub
+push constant 20
+sub
+push local 2
+push constant 22
+sub
+call Screen.drawLine 4
+pop temp 0
+push local 1
+push constant 22
+sub
+push local 2
+push local 0
+sub
+push constant 20
+sub
+push local 1
+push constant 22
+add
+push local 2
+push local 0
+sub
+push constant 20
+sub
+call Screen.drawLine 4
+pop temp 0
+push local 0
+push constant 1
+add
+pop local 0
+goto WHILE_EXP0
+label WHILE_END0
+push constant 0
+return
+function Playground.drawO 0
+push argument 0
+pop pointer 0
+push argument 1
+push constant 1
+sub
+pop argument 1
+push constant 0
+not
+call Screen.setColor 1
+pop temp 0
+push argument 1
+push this 0
+add
+pop pointer 1
+push that 0
+push argument 1
+push this 1
+add
+pop pointer 1
+push that 0
+push constant 18
+call Screen.drawCircle 3
+pop temp 0
+push constant 0
+call Screen.setColor 1
+pop temp 0
+push argument 1
+push this 0
+add
+pop pointer 1
+push that 0
+push argument 1
+push this 1
+add
+pop pointer 1
+push that 0
+push constant 13
+call Screen.drawCircle 3
+pop temp 0
+push constant 0
+return
+function Playground.drawX 5
+push argument 0
+pop pointer 0
+push argument 1
+push constant 1
+sub
+pop argument 1
+push argument 1
+push this 0
+add
+pop pointer 1
+push that 0
+pop local 0
+push argument 1
+push this 1
+add
+pop pointer 1
+push that 0
+pop local 1
+push local 1
+push constant 13
+add
+pop local 2
+push local 1
+push constant 13
+sub
+pop local 3
+push constant 0
+not
+call Screen.setColor 1
+pop temp 0
+push constant 8
+pop local 4
+label WHILE_EXP0
+push local 4
+push constant 15
+lt
+not
+if-goto WHILE_END0
+push local 0
+push local 4
+sub
+push local 2
+push local 0
+push local 4
+add
+push local 3
+call Screen.drawLine 4
+pop temp 0
+push local 0
+push local 4
+add
+push local 2
+push local 0
+push local 4
+sub
+push local 3
+call Screen.drawLine 4
+pop temp 0
+push local 4
+push constant 1
+add
+pop local 4
+goto WHILE_EXP0
+label WHILE_END0
+push constant 0
+return

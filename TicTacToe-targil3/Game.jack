@@ -1,0 +1,475 @@
+/*
+1 49
+.
+.
+9 57
+ESC 140
+ENTER 128
+n 78
+r 82
+q 57
+left 130
+up 131
+right 132
+down 133
+*/
+
+class Game {
+
+	field int PlayerX;
+	field int PlayerO;
+	field int currentPlayer;
+	field int totalGames;
+	field int currentPosition;
+	field Array pos;
+	field Playground playground;
+	
+	constructor Game new(){
+		let playground=Playground.new();
+		let pos =Array.new(9);
+		
+	    do Output.moveCursor(10,15);
+		do Output.printString("Welcome to THE TicTacToe game.");
+		do Sys.wait(2000);
+		do Screen.clearScreen();
+		
+		return this;
+	}
+	
+	method void dispose(){
+	  
+	  do playground.dispose();
+	  do pos.dispose();
+	  do Memory.deAlloc(this);
+	  return;
+	 }
+	 
+	method void newGame()
+	{
+		var int i;
+		let currentPlayer =1;//PlayerX start
+		let PlayerX =0;
+		let PlayerO =0;
+		let totalGames=0;
+		let currentPosition=5;
+		
+		
+	   let i=0;
+       while(i<9){
+			let pos[i]=0;
+			let i=i+1;
+	   }
+	   
+	   do playground.drawBoard();
+	   do playground.drawSq(currentPosition,true);
+	   do initWritings();
+	   return;
+	   
+	}
+	
+	method void nextRound()
+	{
+	   var int i; 
+	   let currentPlayer =1;//PlayerX start
+	   let currentPosition=5;
+	   let i=0;
+       while(i<9){
+			let pos[i]=0;
+			let i=i+1;
+	   }
+		do playground.drawBoard();
+		do playground.drawSq(currentPosition,true);
+		do updateWritings();
+		return;
+	}
+
+
+    method void updateWritings(){
+	   
+		do enterScore();
+		do enterCurrentPlayer();
+		do enterNumOfGames();
+        return;		
+	}		
+		
+	method void initWritings(){
+	    
+		do Output.moveCursor(1,12);
+		do Output.printString("Use The Arrow's or 1-9 to select a cell");
+		
+		do Output.moveCursor(2,18);
+		do Output.printString("press enter to insert shape");
+		
+		do Output.moveCursor(5,5);
+		do Output.printString("X Score:");
+		
+		do Output.moveCursor(5,50);
+		do Output.printString("O Score:");
+		
+		do enterScore();
+		
+        do Output.moveCursor(17,5);
+		do Output.printString("N-next round");
+		
+		do Output.moveCursor(18,5);
+		do Output.printString("R-reset game");
+		
+		do Output.moveCursor(19,5);
+		do Output.printString("ESC-quit");
+		
+		do Output.moveCursor(20,25);
+		do Output.printString("current Player:");
+		do enterCurrentPlayer();
+		
+		do Output.moveCursor(21,24);
+		do Output.printString("Number of games:");
+		do enterNumOfGames();
+		return;
+	}	
+	
+	method void eraseChar(int line,int fromCol, int toCol){
+	  while(fromCol<(toCol+1)){
+	     do Output.moveCursor(line,fromCol);
+		 let fromCol=fromCol+1;
+	  }
+	  return;
+	}	
+	
+	method void enterScore(){
+   
+        //X
+		do eraseChar(5,13,15);
+		do Output.moveCursor(5,13);
+		do Output.printInt(PlayerX);
+		
+		//Y
+		do eraseChar(5,58,61);
+		do Output.moveCursor(5,58);
+		do Output.printInt(PlayerO);
+		return;
+	}
+	
+	method void enterCurrentPlayer(){
+      	
+	  
+		do eraseChar(20,40,40);
+		
+		do Output.moveCursor(20,40);
+		
+		if(currentPlayer=1){
+		  do Output.printString("X");
+		  }
+		if(currentPlayer=2){
+		  do Output.printString("O");
+		  }
+		  
+		 return;
+	}
+	
+	method void enterNumOfGames(){
+      	
+	  
+		do eraseChar(21,40,42);
+		do Output.moveCursor(21,40);
+		do Output.printInt(totalGames);
+		  
+		  
+		 return;
+	}
+	method void choosePos(){
+	
+	    var char key;
+		var boolean gameover;
+		var int oldPosition;
+	
+	
+		do newGame();
+		
+		let gameover=false;
+  
+        
+        while (true) {
+            // waits for a key to be pressed.
+            while (key = 0) {
+                let key = Keyboard.keyPressed();
+				
+            }
+		 
+			let oldPosition=currentPosition;
+           
+		   if (key = 140) {
+                do Screen.clearScreen();
+			    do Output.moveCursor(10,23);
+		        do Output.printString("Bye");
+			    do Sys.halt();
+            }
+			
+			 if(key=78){
+				do nextRound();
+				let gameover=false;
+			 }
+			 
+			 if(key=82){
+				do newGame();
+				let gameover=false;
+			 }
+			 
+			if(~gameover){
+				
+				if (key = 49) {
+					let currentPosition=1;
+				}
+		
+				if (key = 50) {
+					let currentPosition=2;
+				}
+				
+				if (key = 51) {
+					let currentPosition=3;
+				}
+				if (key = 52) {
+					let currentPosition=4;
+				}
+				
+				if (key = 53) {
+					let currentPosition=5;
+				}
+				
+				if (key = 54) {
+					let currentPosition=6;
+				}
+				if (key = 55) {
+					let currentPosition=7;
+				}
+				
+				if (key = 56) {
+					let currentPosition=8;
+				}
+				
+				if (key = 57) {
+					let currentPosition=9;
+				}
+				
+				if (key = 131) {
+					if(currentPosition-3>0){
+						let currentPosition = currentPosition-3;
+					}
+				}
+				if (key = 133) {
+					if(currentPosition+3<10){
+						let currentPosition = currentPosition+3;
+					}
+				}
+				if (key = 130) {
+					if(~(currentPosition=1)&~(currentPosition=4)&~(currentPosition=7)){
+						let currentPosition = currentPosition-1;
+					}
+					
+				}
+				if (key = 132) {
+					if(~(currentPosition=3)&~(currentPosition=6)&~(currentPosition=9)){
+						let currentPosition = currentPosition+1;
+					}
+				
+				}
+				
+				if(~(oldPosition=currentPosition)){
+					do playground.moveSq(oldPosition,currentPosition);
+				
+				}
+				
+				if(key=128){
+				
+					if(pos[currentPosition-1]=0){
+					
+						if(currentPlayer = 1){
+							do playground.drawX(currentPosition);
+							let pos[currentPosition-1]=1;
+						}
+						
+						if(currentPlayer = 2){
+							do playground.drawO(currentPosition);
+							let pos[currentPosition-1]=2;
+						}
+						
+						if(checkWin())
+						{
+							let totalGames=totalGames+1;
+							
+							if(currentPlayer=1){
+								let PlayerX=PlayerX+1;
+							}
+							if(currentPlayer=2){
+								let PlayerO=PlayerO+1;
+							}
+							
+							let gameover=true;
+						}
+						
+						if( ~gameover & posFull())
+						{
+						    do playground.drawSq(currentPosition,false);
+							// round is over
+							let totalGames=totalGames+1;
+							let gameover=true;
+						}
+						else{
+							
+							if(currentPlayer=1){
+								let currentPlayer=2;
+							}
+							
+							else{
+								let currentPlayer=1;
+							}
+							
+						}
+						do updateWritings();
+					}
+					else{//error full pos}
+					 
+					 
+					
+					}
+					
+				}
+			}
+			
+			 
+            let key =0;
+        }
+	return;
+	}
+	
+	method boolean checkWin(){
+
+	   if((pos[0]>0) & (pos[0]=pos[1]) & (pos[1] = pos[2]) ){
+	      do showWinner(4);
+	      return true;
+	   }  
+	   if((pos[3]>0) & (pos[3]=pos[4]) & (pos[4] = pos[5])){
+	   	do showWinner(5);
+	       return true;       
+	   } 
+	   if((pos[6]>0) & (pos[6]=pos[7]) & (pos[7] = pos[8]) ){
+	      do showWinner(6);
+	      return true; 
+	      }
+	   if((pos[0]>0) & (pos[0]=pos[3]) & (pos[3] = pos[6])){
+	   	do showWinner(1);
+	       return true;     
+	   }  
+	   if((pos[1]>0) & (pos[1]=pos[4]) & (pos[4] = pos[7]) ){
+          do showWinner(2);	   
+	     return true;        
+	   }  
+	   if((pos[2]>0) & (pos[2]=pos[5]) & (pos[5] = pos[8])){
+	       do showWinner(3);
+	     return true;     
+	   }  
+	   if((pos[0]>0) & (pos[0]=pos[4]) & (pos[4] = pos[8]) ){
+          do showWinner(8);	   
+	      return true;    
+	   }  
+	   if((pos[2]>0) & (pos[2]=pos[4]) & (pos[4] = pos[6])){
+	     do showWinner(7);
+	     return true;
+	   }
+	   
+       
+	   return false;
+	}
+	
+	method void showWinner(int pos){
+		do playground.drawSq(currentPosition,false);
+		if(pos=1){
+		 do Screen.setColor(true);
+			do Screen.drawLine(180,50,222,50);
+			do Screen.drawLine(180,206,222,206);
+			do Screen.drawLine(180,50,180,206);
+			do Screen.drawLine(222,50,222,206);
+			return;
+		}
+		if(pos=2){
+		 do Screen.setColor(true);
+			do Screen.drawLine(235,50,277,50);
+			do Screen.drawLine(235,206,277,206);
+			do Screen.drawLine(235,50,235,206);
+			do Screen.drawLine(277,50,277,206);
+			return;
+		}
+		if(pos=3){
+		 do Screen.setColor(true);
+			do Screen.drawLine(290,50,332,50);
+			do Screen.drawLine(290,206,332,206);
+			do Screen.drawLine(290,50,290,206);
+			do Screen.drawLine(332,50,332,206);
+			return;
+		}
+		
+		if(pos=4){
+		 do Screen.setColor(true);
+			do Screen.drawLine(180,53,332,53);
+			do Screen.drawLine(180,93,332,93);
+			do Screen.drawLine(180,53,180,93);
+			do Screen.drawLine(332,53,332,93);
+			return;
+		}
+		if(pos=5){
+		 do Screen.setColor(true);
+			do Screen.drawLine(180,53+55,332,53+55);
+			do Screen.drawLine(180,93+55,332,93+55);
+			do Screen.drawLine(180,53+55,180,93+55);
+			do Screen.drawLine(332,53+55,332,93+55);
+			return;                 
+		}                           
+		if(pos=6){                  
+		 do Screen.setColor(true);  
+			do Screen.drawLine(180,53+110,332,53+110);
+			do Screen.drawLine(180,93+110,332,93+110);
+			do Screen.drawLine(180,53+110,180,93+110);
+			do Screen.drawLine(332,53+110,332,93+110);
+			return;
+		}
+		if(pos=7){
+		 do Screen.setColor(true);
+			do Screen.drawLine(305,50,347,50);
+			do Screen.drawLine(165,206,207,206);
+
+			do Screen.drawLine(305,50,165,206);
+			do Screen.drawLine(347,50,207,206);
+			return;
+		}
+		if(pos=8){
+		 do Screen.setColor(true);
+			do Screen.drawLine(305,206,347,206);
+			do Screen.drawLine(165,50,207,50);
+			do Screen.drawLine(305,206,165,50);
+			do Screen.drawLine(347,206,207,50);
+			return;
+		}
+	
+	
+		return;
+	}
+	
+	method boolean posFull(){
+		var int i;
+		
+		let i=0;
+	
+		while(i<9){
+			if(pos[i]=0){
+				return false;
+			}
+			let i=i+1;
+		}
+		return true;
+	}
+	
+	
+	
+	
+	
+}
+	
