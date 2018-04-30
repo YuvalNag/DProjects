@@ -1,5 +1,5 @@
 <DProject>
- <ProjectGuid>{D65C1687-7BFD-4D11-BB63-F16BDDAFFCA2}</ProjectGuid>
+ <ProjectGuid>{4A49B0A9-4A11-44B5-9CD9-57C897070B93}</ProjectGuid>
  <Config name="Debug" platform="Win32">
   <obj>0</obj>
   <link>0</link>
@@ -428,12 +428,9 @@
   <postBuildCommand />
   <filesToClean>*.obj;*.cmd;*.build;*.json;*.dep;*.tlog</filesToClean>
  </Config>
- <Folder name="Targil1">
-
-  <File path="CodeWriterModule.d" />
-
-  <File path="CommandTypeEnum.d" />
+ <Folder name="targil_4">
+  <File path="JackTokenizer.d" />
   <File path="main.d" />
-  <File path="Parser.d" />
+  <File path="Terminals.d" />
  </Folder>
 </DProject>
