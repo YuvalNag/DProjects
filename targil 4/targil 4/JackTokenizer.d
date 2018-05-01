@@ -55,8 +55,10 @@ public:
 	{
 		 if(currentChar=='/')
 		{
-			getComment();
-			continue;
+			if(getComment())
+			   continue;
+			else
+				return;
 			
 		}
 		else if(isSymbol()){
@@ -92,7 +94,7 @@ public:
 
  Tokens tokenType(){return currentTokenKind;}
 
- string keyWord(){return toUpper(currentTokenValue);}
+ string keyWord(){return currentTokenValue;}
 
  char symbal(){return currentTokenValue[0];}
 
@@ -107,7 +109,7 @@ public:
  {
    currentTokenValue ~= to!string(currentChar);
  }
- void getComment()
+ bool getComment()
  {
 	accumulateTokenValue();
 	nextChar();
@@ -116,6 +118,7 @@ public:
 		jackFile.readln();
 		nextChar();
 		currentTokenValue="";
+		return true;
 		
 	}
 	else if(currentChar=='*')
@@ -123,9 +126,18 @@ public:
 		readComment();
 		nextChar();
 		currentTokenValue="";
+		return true;
 		
 
 	}
+	else 
+	{
+		currentTokenKind=Tokens.symbol;
+		accumulateTokenValue();
+		nextChar();
+		return false;
+	}
+	
 	
  }
  void readComment(char[] oldChar=null)
@@ -150,13 +162,13 @@ public:
 
  void getSymbolTok()
  {
- 	currentTokenKind=Tokens.SYMBOL;
+ 	currentTokenKind=Tokens.symbol;
 	accumulateTokenValue();
 	nextChar();
  }
  void getNumberTok()
  {
-	currentTokenKind=Tokens.INT_CONST;
+	currentTokenKind=Tokens.integerConstant;
 	while(isNumeric(to!string(currentChar)))
 	{
 		accumulateTokenValue();
@@ -165,7 +177,7 @@ public:
  }
  void getStringTok()
  {
-	currentTokenKind=Tokens.STRING_CONST;
+	currentTokenKind=Tokens.stringConstant;
 	nextChar();
 	while(currentChar != '"')
 	{
@@ -178,7 +190,7 @@ public:
 
  void getIDTok()
  {
-	currentTokenKind=Tokens.IDENTIFIER;
+	currentTokenKind=Tokens.identifier;
 	while(!isSymbol() && !isWhite(currentChar))
 	{
 		accumulateTokenValue();
@@ -201,10 +213,10 @@ public:
 	
 	if(isKeyword())
 	{
-		currentTokenKind=Tokens.KEYWORD;
+		currentTokenKind=Tokens.keyword;
 	}
 	else
-		currentTokenKind=Tokens.IDENTIFIER;
+		currentTokenKind=Tokens.identifier;
 }
 
  bool isSymbol()

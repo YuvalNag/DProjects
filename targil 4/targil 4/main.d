@@ -3,56 +3,43 @@ import JackTokenizer;
 import std.conv;
 import Terminals;
 import std.xml;
+
+
+
+import std.algorithm;
+import std.array;
+import std.file;
 import std.string;
+import std.path;
+import std.uni;
+
 int main(string[] argv)
 {
-    JackTokenizer a=new JackTokenizer("D:\\TicTacToe\\Game.jack");
-	File file =File("D:\\TicTacToe\\Game.xml","w");
-	auto doc = new Document(new Tag("TOKENS"));
-//file.writeln("<TOKENS>");
-	while(a.hasMoreTokens()){
-          a.advance();
+	auto Files = dirEntries(chomp("C:\\Users\\nissy34\\OneDrive - g.jct.ac.il\\semester B\\Language princibls\\Exercises\\Targil4\\project 10\\ArrayTest"), SpanMode.shallow).filter!(f => f.name.endsWith(".jack") && f.isFile);
+	foreach (file; Files)
+	{
+		writeln("tokenazing - ",baseName(file.name));
+		JackTokenizer a=new JackTokenizer(file.name);
+		File outFile =File(chainPath(chomp(dirName(file.name)),baseName(file.name,".jack")~"Check.xml"),"w");
+		auto doc = new Document(new Tag("tokens"));
+		//file.writeln("<TOKENS>");
+		while(a.hasMoreTokens()){
+			a.advance();
 
-		Element element; 
-		
-		//
-		//if(a.tokenType()==Tokens.SYMBOL){
-		//     if(a.symbal()=='<')
-		//         element=new Element(to!string(a.tokenType()),"&lt;");
-		//            
-		//else if(a.symbal()=='>')
-		//    element=new Element(to!string(a.tokenType()),"&gt;");
-		//    
-		//else if(a.symbal()=='&')
-		//    element=new Element(to!string(a.tokenType()),"&amp;");
-		//
-		//    
-		//else 
-		//    element=new Element(to!string(a.tokenType()),a.identifier());
-		//
-		//    
-		//}
-		//else 
+			Element element; 
 			element=new Element(to!string(a.tokenType()),a.identifier());
 
-        doc ~=element;
+			doc ~=element;
 
+		}
+		
+		outFile.writefln(join(doc.pretty(3),"\n"));
+        outFile.close();
+		
+		
 	}
-		//file.writeln("</TOKENS>");
-		//file.close();
-	 file.writefln(join(doc.pretty(3),"\n"));
+  writeln("finished");
 	readln();
     return 0;
 }
-//if(a.tokenType()==Tokens.SYMBOL){
-//    if(a.symbal()=='<')
-//        file.writeln("<",to!string(a.tokenType()),">","&lt;","</",to!string(a.tokenType()),">");
-//    else if(a.symbal()=='>')
-//        file.writeln("<",to!string(a.tokenType()),">","&gt;","</",to!string(a.tokenType()),">");
-//    else if(a.symbal()=='&')
-//        file.writeln("<",to!string(a.tokenType()),">","&amp;","</",to!string(a.tokenType()),">");
-//    else 
-//        file.writeln("<",to!string(a.tokenType()),">",a.identifier(),"</",to!string(a.tokenType()),">");
-//}
-//else 
-//file.writeln("<",to!string(a.tokenType()),">",a.identifier(),"</",to!string(a.tokenType()),">");
+
