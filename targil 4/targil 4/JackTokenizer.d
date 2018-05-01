@@ -16,7 +16,7 @@ public class JackTokenizer{
 	File jackFile;
 	Tokens currentTokenKind;
 	string currentTokenValue;
-	string buf;
+	//string buf;
 	char[] currentChar;
 
 
@@ -39,6 +39,7 @@ public:
 
  void advance()
  {
+	bool isCommentFlag=false;
 //	buf ="";
 	//buf=join([buf,to!string(currentChar[0])]);
 	while(!jackFile.eof())
@@ -46,10 +47,13 @@ public:
 		if(isWhite(currentChar[0])){
 			currentChar=jackFile.rawRead(currentChar);
 		}
+		else if(currentChar[0]=='/')
+		{
+			isCommentFlag=isComment();
+			break;
+		}
 		else if(isSymbol()){
-			currentTokenKind=Tokens.SYMBOL;
-			currentTokenValue=join([currentTokenValue,to!string(currentChar[0])]);
-			currentChar=jackFile.rawRead(currentChar);
+			getSymbolTok();
 			break;
 		}
 		else if(isNumeric(to!string(currentChar[0])))
@@ -73,10 +77,58 @@ public:
 			break;
 		}
 	}
-	writeln(to!string(currentTokenKind)," ->  ", currentTokenValue);
-	currentTokenValue="";
+	if(!isCommentFlag)
+	{
+		writeln("<",to!string(currentTokenKind),">",currentTokenValue,"</",to!string(currentTokenKind),">");
+		currentTokenValue="";
+	}
  }
- 
+ bool isComment()
+ {
+	currentTokenValue=join([currentTokenValue,to!string(currentChar[0])]);
+	currentChar=jackFile.rawRead(currentChar);
+	if(currentChar[0]=='/')
+	{
+		jackFile.readln();
+		currentChar=jackFile.rawRead(currentChar);
+		return true;
+	}
+	else if(currentChar[0]=='*')
+	{
+		readComment();
+		currentChar=jackFile.rawRead(currentChar);
+		return true;
+
+	}
+	else
+		currentTokenKind=Tokens.SYMBOL;
+	return false;
+ }
+ void readComment(char[] oldChar=null)
+ {
+	char[] endOfComment;
+	string buf;
+	if(oldChar==null)
+	{
+		endOfComment=new char[1];
+	}
+	else 
+		endOfComment=oldChar;
+
+	while(endOfComment[0] != '*')
+		endOfComment=jackFile.rawRead(endOfComment);
+	endOfComment=jackFile.rawRead(endOfComment);
+	if(endOfComment[0] == '/')
+		return;
+	readComment(endOfComment);
+	
+ }
+ void getSymbolTok()
+ {
+ 	currentTokenKind=Tokens.SYMBOL;
+	currentTokenValue=join([currentTokenValue,to!string(currentChar[0])]);
+	currentChar=jackFile.rawRead(currentChar);
+ }
  void getNumberTok()
  {
 	currentTokenKind=Tokens.INT_CONST;
