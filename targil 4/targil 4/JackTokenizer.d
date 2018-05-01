@@ -1,6 +1,5 @@
 module JackTokenizer;
 import Terminals;
-
 import std.conv;
 import std.stdio;
 import std.algorithm;
@@ -8,68 +7,73 @@ import std.array;
 import std.file;
 import std.string;
 import std.path;
+import std.uni;
 
-import std.ascii;
+
 
 public class JackTokenizer{
 
 	File jackFile;
 	Tokens currentTokenKind;
 	string currentTokenValue;
-	//string buf;
-	char[] currentChar;
+	char[] buff;
+	char currentChar;
 
 
 public:
 	this(string path)
 	{
 		jackFile=File(chomp(path),"r");
-		currentChar=new char[1];
-		currentTokenValue="";
-		currentChar=jackFile.rawRead(currentChar);
-		while(hasMoreTokens())
-			advance();
-		readln();
+		buff=new char[1];
+		nextChar();
+	}
+
+	void nextChar(){
+
+		buff=jackFile.rawRead(buff);
+		if(buff.length==1)
+			currentChar=buff[0];
 	}
  bool hasMoreTokens(){
 
+	while(!jackFile.eof()&&isWhite(currentChar))
+		nextChar();
 
-     
-	while(!jackFile.eof()&&isWhite(currentChar[0]))
-		currentChar=jackFile.rawRead(currentChar);
 	if(jackFile.eof())
 		return false;
+
 	return true;
 	
  }
 
  void advance()
  {
-	bool isCommentFlag=false;
-//	buf ="";
-	//buf=join([buf,to!string(currentChar[0])]);
-	while(!jackFile.eof())
+	
+    currentTokenValue="";
+
+	while(hasMoreTokens())
 	{
-		 if(currentChar[0]=='/')
+		 if(currentChar=='/')
 		{
-			isCommentFlag=isComment();
-			break;
+			getComment();
+			continue;
+			
 		}
 		else if(isSymbol()){
 			getSymbolTok();
 			break;
 		}
-		else if(isNumeric(to!string(currentChar[0])))
+		else if(isNumeric(to!string(currentChar)))
 		{
 			getNumberTok();
 			break;
 		}
-		else if(currentChar[0] == '"')
+		else if(currentChar == '"')
 		{
 			getStringTok();
 			break;
 		}
-		else if(currentChar[0] == '_')
+		else if(currentChar == '_')
 		{
 			getIDTok();
 			break;
@@ -80,32 +84,49 @@ public:
 			break;
 		}
 	}
-	if(!isCommentFlag)
-	{
-		writeln("<",to!string(currentTokenKind),">",currentTokenValue,"</",to!string(currentTokenKind),">");
-		currentTokenValue="";
-	}
+	
+		//writeln("<",to!string(currentTokenKind),">",currentTokenValue,"</",to!string(currentTokenKind),">");
+		
+	
  }
- bool isComment()
+
+ Tokens tokenType(){return currentTokenKind;}
+
+ string keyWord(){return toUpper(currentTokenValue);}
+
+ char symbal(){return currentTokenValue[0];}
+
+ string identifier(){return currentTokenValue;}
+
+ int intVal(){return to!int(currentTokenValue);}
+
+ string stringval(){return currentTokenValue;}
+
+ private:
+ void accumulateTokenValue()
  {
-	currentTokenValue=join([currentTokenValue,to!string(currentChar[0])]);
-	currentChar=jackFile.rawRead(currentChar);
-	if(currentChar[0]=='/')
+   currentTokenValue ~= to!string(currentChar);
+ }
+ void getComment()
+ {
+	accumulateTokenValue();
+	nextChar();
+	if(currentChar=='/')
 	{
 		jackFile.readln();
-		currentChar=jackFile.rawRead(currentChar);
-		return true;
+		nextChar();
+		currentTokenValue="";
+		
 	}
-	else if(currentChar[0]=='*')
+	else if(currentChar=='*')
 	{
 		readComment();
-		currentChar=jackFile.rawRead(currentChar);
-		return true;
+		nextChar();
+		currentTokenValue="";
+		
 
 	}
-	else
-		currentTokenKind=Tokens.SYMBOL;
-	return false;
+	
  }
  void readComment(char[] oldChar=null)
  {
@@ -126,51 +147,52 @@ public:
 	readComment(endOfComment);
 	
  }
+
  void getSymbolTok()
  {
  	currentTokenKind=Tokens.SYMBOL;
-	currentTokenValue=join([currentTokenValue,to!string(currentChar[0])]);
-	currentChar=jackFile.rawRead(currentChar);
+	accumulateTokenValue();
+	nextChar();
  }
  void getNumberTok()
  {
 	currentTokenKind=Tokens.INT_CONST;
-	while(isNumeric(to!string(currentChar[0])))
+	while(isNumeric(to!string(currentChar)))
 	{
-		currentTokenValue=join([currentTokenValue,to!string(currentChar[0])]);
-		currentChar=jackFile.rawRead(currentChar);
+		accumulateTokenValue();
+		nextChar();
 	}
  }
  void getStringTok()
  {
 	currentTokenKind=Tokens.STRING_CONST;
-	currentChar=jackFile.rawRead(currentChar);
-	while(currentChar[0] != '"')
+	nextChar();
+	while(currentChar != '"')
 	{
-		currentTokenValue=join([currentTokenValue,to!string(currentChar[0])]);
-		currentChar=jackFile.rawRead(currentChar);
+		accumulateTokenValue();
+		nextChar();
 	}
-    currentChar=jackFile.rawRead(currentChar);
+    nextChar();
 	
  }
 
  void getIDTok()
  {
 	currentTokenKind=Tokens.IDENTIFIER;
-	while(!isSymbol() && !isWhite(currentChar[0]))
+	while(!isSymbol() && !isWhite(currentChar))
 	{
-		currentTokenValue=join([currentTokenValue,to!string(currentChar[0])]);
-		currentChar=jackFile.rawRead(currentChar);
+		accumulateTokenValue();
+		nextChar();
 	}
  }
 
  void getKeywordTok()
  {
-	while(!isSymbol() && !isWhite(currentChar[0]))
+	while(!isSymbol() && !isWhite(currentChar))
 	{
-		currentTokenValue=join([currentTokenValue,to!string(currentChar[0])]);
-		currentChar=jackFile.rawRead(currentChar);
-		if(currentChar[0] == '_' || isNumeric(to!string(currentChar[0])))
+		accumulateTokenValue();
+		nextChar();
+		if(currentChar == '_' || isNumeric(to!string(currentChar)))
 		{
 			getIDTok();
 			break;
@@ -187,7 +209,7 @@ public:
 
  bool isSymbol()
  {
-	switch(currentChar[0])
+	switch(currentChar)
 	{
 		case '{':
 		case '}':
@@ -250,17 +272,7 @@ public:
 		break;
 	}
  }
-Tokens tokenType(){return currentTokenKind;}
 
-KeyWords keyWord(){return KeyWords.BOOLEAN;}
-
-char symbal(){return currentTokenValue[0];}
-
-string identifier(){return currentTokenValue;}
-
-int intVal(){return to!int(currentTokenValue);}
-
-string stringval(){return currentTokenValue;}
 
 
 
