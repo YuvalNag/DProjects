@@ -33,7 +33,13 @@ public:
 	}
  bool hasMoreTokens(){
 
-	return !jackFile.eof();
+
+     
+	while(!jackFile.eof()&&isWhite(currentChar[0]))
+		currentChar=jackFile.rawRead(currentChar);
+	if(jackFile.eof())
+		return false;
+	return true;
 	
  }
 
@@ -44,10 +50,7 @@ public:
 	//buf=join([buf,to!string(currentChar[0])]);
 	while(!jackFile.eof())
 	{
-		if(isWhite(currentChar[0])){
-			currentChar=jackFile.rawRead(currentChar);
-		}
-		else if(currentChar[0]=='/')
+		 if(currentChar[0]=='/')
 		{
 			isCommentFlag=isComment();
 			break;
