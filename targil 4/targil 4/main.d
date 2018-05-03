@@ -22,7 +22,7 @@ int main(string[] argv)
 		JackTokenizer a=new JackTokenizer(file.name);
 		File outFile =File(chainPath(chomp(dirName(file.name)),baseName(file.name,".jack")~"Check.xml"),"w");
 		auto doc = new Document(new Tag("tokens"));
-		//file.writeln("<TOKENS>");
+
 		while(a.hasMoreTokens()){
 			a.advance();
 

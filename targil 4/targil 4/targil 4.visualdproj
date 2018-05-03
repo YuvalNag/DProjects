@@ -429,6 +429,7 @@
   <filesToClean>*.obj;*.cmd;*.build;*.json;*.dep;*.tlog</filesToClean>
  </Config>
  <Folder name="targil_4">
+  <File path="CompilationEngine.d" />
   <File path="JackTokenizer.d" />
   <File path="main.d" />
   <File path="Terminals.d" />
