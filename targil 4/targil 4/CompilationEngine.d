@@ -21,12 +21,22 @@ public class CompilationEngine{
 
 	this(string path)
 	{
-		jackTokenizer =new JackTokenizer(path);
-        jackTokenizer.advance();
-		this.path=path;
+
+		auto Files = dirEntries(chomp(path), SpanMode.shallow).filter!(f => f.name.endsWith(".jack") && f.isFile);
+		foreach (file; Files)
+		{
+			writeln("anylazing - ",baseName(file.name));
+			jackTokenizer=new JackTokenizer(file.name);
+			 jackTokenizer.advance();
+            compileClass();
+			File outFile =File(chainPath(chomp(dirName(file.name)),baseName(file.name,".jack")~"SCheck.xml"),"w");
+	
+
+			outFile.writefln(join(doc.pretty(3),"\n"));
+			outFile.close();
+		}
 
 	}
-
 	
   	void compileClass()
 	{

@@ -21,7 +21,7 @@ int main(string[] argv)
 	{
 		writeln("tokenazing - ",baseName(file.name));
 		JackTokenizer a=new JackTokenizer(file.name);
-		File outFile =File(chainPath(chomp(dirName(file.name)),baseName(file.name,".jack")~"Check.xml"),"w");
+		File outFile =File(chainPath(chomp(dirName(file.name)),baseName(file.name,".jack")~"TCheck.xml"),"w");
 		auto doc = new Document(new Tag("tokens"));
 
 		while(a.hasMoreTokens()){
@@ -41,14 +41,12 @@ int main(string[] argv)
 	}
 	*/
 
-	CompilationEngine a=new CompilationEngine(chomp("C:\\Users\\nissy34\\OneDrive - g.jct.ac.il\\semester B\\Language princibls\\Exercises\\Targil4\\project 10\\ArrayTest\\Main.jack"));
-	a.compileClass();
-	//File fileout=new File("C:\\Users\\nissy34\\OneDrive - g.jct.ac.il\\semester B\\Language princibls\\Exercises\\Targil4\\project 10\\firstCheck\\first.jack","w");
-    File outFile =File("C:\\Users\\nissy34\\OneDrive - g.jct.ac.il\\semester B\\Language princibls\\Exercises\\Targil4\\project 10\\ArrayTest\\MainSCheck.xml","w");
-    outFile.writefln(join((a.doc).pretty(3),"\n"));
+//	CompilationEngine a=new CompilationEngine(chomp("C:\\Users\\nissy34\\OneDrive - g.jct.ac.il\\semester B\\Language princibls\\Exercises\\Targil4\\project 10\\ExpressionlessSquare"));
+	CompilationEngine a=new CompilationEngine(chomp("C:\\Users\\nissy34\\source\\repos\\DProjects\\TicTacToe-targil3"));
+
 
   writeln("finished");
-  outFile.close();
+
 	readln();
     return 0;
 }
