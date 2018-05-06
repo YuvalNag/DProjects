@@ -493,7 +493,7 @@ public class CompilationEngine{
 			return whileStatementElement;
 		//(
 		if(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() =='(')
-		{	
+			
 			whileStatementElement ~=new Element(to!string(jackTokenizer.tokenType()),to!string(jackTokenizer.symbol()));
 
 			if(!advance())
@@ -503,13 +503,14 @@ public class CompilationEngine{
 			//expression
 			if(!(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() ==')'))
 				whileStatementElement ~= compileExpression();
+			
 			//)
 			if(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() ==')')
 				whileStatementElement ~=new Element(to!string(jackTokenizer.tokenType()),to!string(jackTokenizer.symbol()));
 
 			if(!advance())
 				return whileStatementElement;
-		}
+		
 
 		//{
 		if(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() =='{')	
@@ -584,11 +585,11 @@ public class CompilationEngine{
 	        if(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() ==')')
 	        	fatherElement~= new Element(to!string(jackTokenizer.tokenType()),to!string(jackTokenizer.symbol()));
 	             
-	       	return;
+	       	
 		}
 
 
-		if(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() =='.')
+		else if(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() =='.')
 		{
 			fatherElement~= new Element(to!string(jackTokenizer.tokenType()),to!string(jackTokenizer.symbol()));
 
@@ -617,12 +618,13 @@ public class CompilationEngine{
 			if(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() ==')')
 				fatherElement~= new Element(to!string(jackTokenizer.tokenType()),to!string(jackTokenizer.symbol()));
 
-			return;
+			
 		}
 
 
 
-
+		if(!advance())
+			return;
 		return;
 
 		
@@ -700,7 +702,7 @@ public class CompilationEngine{
 					return termElement;
 				break;
 			case Tokens.symbol :
-				if( jackTokenizer.symbol() =='-' || jackTokenizer.symbol() =='+')
+				if( jackTokenizer.symbol() =='-' || jackTokenizer.symbol() =='~')
 				{
 					termElement~= new Element(to!string(jackTokenizer.tokenType()),to!string(jackTokenizer.symbol()));
 					if(!advance())
@@ -756,8 +758,7 @@ public class CompilationEngine{
 				else if(jackTokenizer.tokenType() == Tokens.symbol && (jackTokenizer.symbol() =='.' || jackTokenizer.symbol() =='(') )
 				{	
 					compileSubroutineCall(termElement,tempTokenValue);
-					if(!advance())
-						return termElement;
+					
 					break;
 				}
 			break;
