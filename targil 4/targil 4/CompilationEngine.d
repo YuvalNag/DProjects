@@ -71,7 +71,7 @@ public class CompilationEngine{
   	Element compileClassVerDec()
 	{	
 
-		Element classVerDecElement=new Element("ClassVerDec");
+		Element classVerDecElement=new Element("classVarDec");
 		classVerDecElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.keyWord());
 		
 		if(!advance())
@@ -143,6 +143,9 @@ public class CompilationEngine{
 
 		if((jackTokenizer.tokenType() == Tokens.identifier)||(jackTokenizer.tokenType() == Tokens.keyword && (jackTokenizer.keyWord() =="int" || jackTokenizer.keyWord() =="char" || jackTokenizer.keyWord() =="boolean")))
 			subroutineDecElement ~= parameterList();
+		else 
+			subroutineDecElement ~= new Element("parameterList");
+
 
 		
 
@@ -179,6 +182,9 @@ public class CompilationEngine{
 		while(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() ==',')
 		{
 			parameterListElement ~= new Element(to!string(jackTokenizer.tokenType()),to!string(jackTokenizer.symbol()));
+
+			if(!advance())
+				return parameterListElement;
 
 			if(jackTokenizer.tokenType() == Tokens.keyword && (jackTokenizer.keyWord() =="int" || jackTokenizer.keyWord() =="char" || jackTokenizer.keyWord() =="boolean"))
 				parameterListElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.keyWord());
@@ -580,6 +586,9 @@ public class CompilationEngine{
 	         
 	        if(!(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() ==')'))
 	        	fatherElement~= compileExpressionList();
+			else 
+				fatherElement~= new Element("expressionList");
+
 	         
 	         
 	        if(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() ==')')
@@ -613,6 +622,8 @@ public class CompilationEngine{
 
 			if(!(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() ==')'))
 				fatherElement~= compileExpressionList();
+			else 
+				fatherElement~= new Element("expressionList");
 
 
 			if(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() ==')')
@@ -719,6 +730,7 @@ public class CompilationEngine{
 					//expression
 					if(!(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() ==')'))
 						termElement ~= compileExpression();
+					
 
 					//)
 					if(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() ==')')

@@ -41,10 +41,10 @@ int main(string[] argv)
 	}
 	*/
 
-	CompilationEngine a=new CompilationEngine(chomp("C:\\Users\\nissy34\\OneDrive - g.jct.ac.il\\semester B\\Language princibls\\Exercises\\Targil4\\project 10\\Square\\SquareGame.jack"));
+	CompilationEngine a=new CompilationEngine(chomp("C:\\Users\\nissy34\\OneDrive - g.jct.ac.il\\semester B\\Language princibls\\Exercises\\Targil4\\project 10\\ArrayTest\\Main.jack"));
 	a.compileClass();
 	//File fileout=new File("C:\\Users\\nissy34\\OneDrive - g.jct.ac.il\\semester B\\Language princibls\\Exercises\\Targil4\\project 10\\firstCheck\\first.jack","w");
-    File outFile =File("C:\\Users\\nissy34\\OneDrive - g.jct.ac.il\\semester B\\Language princibls\\Exercises\\Targil4\\project 10\\Square\\SquareGameSCheck.xml","w");
+    File outFile =File("C:\\Users\\nissy34\\OneDrive - g.jct.ac.il\\semester B\\Language princibls\\Exercises\\Targil4\\project 10\\ArrayTest\\MainSCheck.xml","w");
     outFile.writefln(join((a.doc).pretty(3),"\n"));
 
   writeln("finished");
