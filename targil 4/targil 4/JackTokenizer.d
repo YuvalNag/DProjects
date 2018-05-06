@@ -96,7 +96,7 @@ public:
 
  string keyWord(){return currentTokenValue;}
 
- char symbal(){return currentTokenValue[0];}
+ char symbol(){return currentTokenValue[0];}
 
  string identifier(){return currentTokenValue;}
 

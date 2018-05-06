@@ -14,6 +14,7 @@ import std.uni;
 
 
 public class CompilationEngine{
+	public:
 	Document doc;
 	JackTokenizer jackTokenizer;
 	string path;
@@ -43,7 +44,7 @@ public class CompilationEngine{
 				return;
 
 			if(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() =='{')
-				doc ~=new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.symbol());
+				doc ~=new Element(to!string(jackTokenizer.tokenType()),to!string(to!string(jackTokenizer.symbol())));
 
 			if(!advance())
 				return;
@@ -62,9 +63,11 @@ public class CompilationEngine{
 					return;
 			}
 			if(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() =='}')
-				doc ~=new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.symbol());
+				doc ~=new Element(to!string(jackTokenizer.tokenType()),to!string(jackTokenizer.symbol()));
 		}
 	}
+
+
 	Element compileClassVerDec()
 	{	
 
@@ -91,7 +94,7 @@ public class CompilationEngine{
 
 		while(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() ==',')
 		{
-			classVerDecElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.symbol());
+			classVerDecElement~= new Element(to!string(jackTokenizer.tokenType()),to!string(jackTokenizer.symbol()));
 
 			if(!advance())
 				return classVerDecElement;
@@ -104,7 +107,8 @@ public class CompilationEngine{
 		}
 		
 		if(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() ==';')
-			classVerDecElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.symbol());
+			classVerDecElement~= new Element(to!string(jackTokenizer.tokenType()),to!string(jackTokenizer.symbol()));
+
 		return classVerDecElement;
 	}
 
@@ -132,7 +136,7 @@ public class CompilationEngine{
 			return subroutineDecElement;
 
 		if(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() =='(')
-			subroutineDecElement ~=new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.symbol());
+			subroutineDecElement ~=new Element(to!string(jackTokenizer.tokenType()),to!string(jackTokenizer.symbol()));
 
 		if(!advance())
 			return subroutineDecElement;
@@ -142,7 +146,7 @@ public class CompilationEngine{
 
 
 		if(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() ==')')
-			subroutineDecElement ~=new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.symbol());
+			subroutineDecElement ~=new Element(to!string(jackTokenizer.tokenType()),to!string(jackTokenizer.symbol()));
 
 
 		subroutineDecElement ~= SubroutineBody();
@@ -166,7 +170,7 @@ public class CompilationEngine{
 
 		while(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() ==',')
 		{
-			parameterListElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.symbol());
+			parameterListElement~= new Element(to!string(jackTokenizer.tokenType()),to!string(jackTokenizer.symbol()));
 
 			if(!advance())
 				return parameterListElement;
@@ -184,7 +188,7 @@ public class CompilationEngine{
 
 	Element SubroutineBody(){
 
-
+return new Element("SubroutineBody");
 	}
 	bool advance()
 	{

@@ -3,7 +3,7 @@ import JackTokenizer;
 import std.conv;
 import Terminals;
 import std.xml;
-
+import CompilationEngine;
 
 
 import std.algorithm;
@@ -15,7 +15,8 @@ import std.uni;
 
 int main(string[] argv)
 {
-	auto Files = dirEntries(chomp("C:\\Users\\nissy34\\OneDrive - g.jct.ac.il\\semester B\\Language princibls\\Exercises\\Targil4\\project 10\\ArrayTest"), SpanMode.shallow).filter!(f => f.name.endsWith(".jack") && f.isFile);
+	/*
+	auto Files = dirEntries(chomp("C:\\Users\\nissy34\\OneDrive - g.jct.ac.il\\semester B\\Language princibls\\Exercises\\Targil4\\project 10\\firstCheck"), SpanMode.shallow).filter!(f => f.name.endsWith(".jack") && f.isFile);
 	foreach (file; Files)
 	{
 		writeln("tokenazing - ",baseName(file.name));
@@ -38,7 +39,16 @@ int main(string[] argv)
 		
 		
 	}
+	*/
+
+	CompilationEngine a=new CompilationEngine(chomp("C:\\Users\\nissy34\\OneDrive - g.jct.ac.il\\semester B\\Language princibls\\Exercises\\Targil4\\project 10\\firstCheck\\first.jack"));
+	a.compileClass();
+	//File fileout=new File("C:\\Users\\nissy34\\OneDrive - g.jct.ac.il\\semester B\\Language princibls\\Exercises\\Targil4\\project 10\\firstCheck\\first.jack","w");
+    File outFile =File("C:\\Users\\nissy34\\OneDrive - g.jct.ac.il\\semester B\\Language princibls\\Exercises\\Targil4\\project 10\\firstCheck\\first.xml","w");
+    outFile.writefln(join((a.doc).pretty(3),"\n"));
+
   writeln("finished");
+  outFile.close();
 	readln();
     return 0;
 }
