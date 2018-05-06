@@ -201,15 +201,15 @@ public class CompilationEngine{
 
 		while(jackTokenizer.tokenType() == Tokens.keyword && jackTokenizer.keyWord() =="var")
 		{
-			subroutineBodyElement ~= compilevarDec();
+			subroutineBodyElement ~= compileVarDec();
 			
 			if(!advance())
-				return subroutineDecElement;
+				return subroutineBodyElement;
 
 		}
 
 		if(jackTokenizer.tokenType() == Tokens.keyword && (jackTokenizer.keyWord() =="let" || jackTokenizer.keyWord() =="if" || jackTokenizer.keyWord() =="while" || jackTokenizer.keyWord() =="do"||jackTokenizer.keyWord() =="return"))
-			subroutineDecElement~= compileStatements();
+			subroutineBodyElement~= compileStatements();
         
 
 
@@ -371,51 +371,51 @@ public class CompilationEngine{
   }
 
 
-	Element compileVerDec()
+	Element compileVarDec()
 	{	
-		Element verDecElement=new Element("verDec");
-		verDecElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.keyWord());
+		Element varDecElement=new Element("varDec");
+		varDecElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.keyWord());
 
 		if(!advance())
-			return verDecElement;
+			return varDecElement;
 
 		//type
 		if(jackTokenizer.tokenType() == Tokens.keyword && (jackTokenizer.keyWord() =="int" || jackTokenizer.keyWord() =="char" || jackTokenizer.keyWord() =="boolean" ))
-			verDecElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.keyWord());
+			varDecElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.keyWord());
 		
 		if(jackTokenizer.tokenType() == Tokens.identifier)
-			verDecElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.identifier());
+			varDecElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.identifier());
 
 		if(!advance())
-			return verDecElement;
+			return varDecElement;
 		
 		//varName
 		if(jackTokenizer.tokenType() == Tokens.identifier)
-			verDecElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.identifier());
+			varDecElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.identifier());
 
 		if(!advance())
-			return verDecElement;
+			return varDecElement;
 
-		//(, verName)*
+		//(, varName)*
 		while(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() ==',')
 		{
-			verDecElement~= new Element(to!string(jackTokenizer.tokenType()),to!string(jackTokenizer.symbol()));
+			varDecElement~= new Element(to!string(jackTokenizer.tokenType()),to!string(jackTokenizer.symbol()));
 
 			if(!advance())
-				return verDecElement;
+				return varDecElement;
 
 			if(jackTokenizer.tokenType() == Tokens.identifier)
-				verDecElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.identifier());
+				varDecElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.identifier());
 
 			if(!advance())
-				return verDecElement;
+				return varDecElement;
 		
 		}
 		//;
 		if(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() ==';')
-			verDecElement~= new Element(to!string(jackTokenizer.tokenType()),to!string(jackTokenizer.symbol()));
+			varDecElement~= new Element(to!string(jackTokenizer.tokenType()),to!string(jackTokenizer.symbol()));
 
-		return verDecElement;
+		return varDecElement;
 
 	}
 
