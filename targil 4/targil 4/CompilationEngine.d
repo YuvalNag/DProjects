@@ -44,7 +44,7 @@ public class CompilationEngine{
 				return;
 
 			if(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() =='{')
-				doc ~=new Element(to!string(jackTokenizer.tokenType()),to!string(to!string(jackTokenizer.symbol())));
+				doc ~=new Element(to!string(jackTokenizer.tokenType()),to!string(to!string(to!string(jackTokenizer.symbol()))));
 
 			if(!advance())
 				return;
@@ -63,7 +63,7 @@ public class CompilationEngine{
 					return;
 			}
 			if(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() =='}')
-				doc ~=new Element(to!string(jackTokenizer.tokenType()),to!string(jackTokenizer.symbol()));
+				doc ~=new Element(to!string(jackTokenizer.tokenType()),to!string(to!string(jackTokenizer.symbol())));
 		}
 	}
 
@@ -94,7 +94,7 @@ public class CompilationEngine{
 
 		while(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() ==',')
 		{
-			classVerDecElement~= new Element(to!string(jackTokenizer.tokenType()),to!string(jackTokenizer.symbol()));
+			classVerDecElement~= new Element(to!string(jackTokenizer.tokenType()),to!string(to!string(jackTokenizer.symbol())));
 
 			if(!advance())
 				return classVerDecElement;
@@ -149,7 +149,7 @@ public class CompilationEngine{
 			subroutineDecElement ~=new Element(to!string(jackTokenizer.tokenType()),to!string(jackTokenizer.symbol()));
 
 
-		subroutineDecElement ~= SubroutineBody();
+		subroutineDecElement ~= subroutineBody();
 
 		return subroutineDecElement;
 	}
@@ -170,13 +170,13 @@ public class CompilationEngine{
 
 		while(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() ==',')
 		{
-			parameterListElement~= new Element(to!string(jackTokenizer.tokenType()),to!string(jackTokenizer.symbol()));
+			parameterListElement ~= new Element(to!string(jackTokenizer.tokenType()),to!string(jackTokenizer.symbol()));
 
 			if(!advance())
 				return parameterListElement;
 
 			if(jackTokenizer.tokenType() == Tokens.identifier)
-				parameterListElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.identifier());
+				parameterListElement ~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.identifier());
 
 			if(!advance())
 				return parameterListElement;
@@ -186,10 +186,190 @@ public class CompilationEngine{
 		
 	}
 
-	Element SubroutineBody(){
+	Element subroutineBody(){
 
-return new Element("SubroutineBody");
+        Element subroutineBodyElement= new Element("subroutineBody");
+
+		if(!advance())
+			return subroutineBodyElement;
+	
+		if(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() =='{')
+			subroutineBodyElement ~= new Element(to!string(jackTokenizer.tokenType()),to!string(jackTokenizer.symbol()));
+		
+		if(!advance())
+			return subroutineBodyElement;
+
+		while(jackTokenizer.tokenType() == Tokens.keyword && jackTokenizer.keyWord() =="var")
+		{
+			subroutineBodyElement ~= compilevarDec();
+			
+			if(!advance())
+				return subroutineDecElement;
+
+		}
+
+		if(jackTokenizer.tokenType() == Tokens.keyword && (jackTokenizer.keyWord() =="let" || jackTokenizer.keyWord() =="if" || jackTokenizer.keyWord() =="while" || jackTokenizer.keyWord() =="do"||jackTokenizer.keyWord() =="return"))
+			subroutineDecElement~= compileStatements();
+        
+
+
+		if(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() =='}')
+			subroutineBodyElement ~= new Element(to!string(jackTokenizer.tokenType()),to!string(jackTokenizer.symbol()));
+
+		
+		
+		return subroutineBodyElement;
+
+
 	}
+
+  Element compileStatements(){
+	
+	Element statementsElement= new Element("statements");
+
+	while(jackTokenizer.tokenType() == Tokens.keyword && (jackTokenizer.keyWord() =="let" || jackTokenizer.keyWord() =="if" || jackTokenizer.keyWord() =="while" || jackTokenizer.keyWord() =="do"||jackTokenizer.keyWord() =="return"))
+	{
+
+		string keyWord=jackTokenizer.keyWord();
+	    switch(keyWord){
+	    	case "let":
+	    		statementsElement ~= compileLet();
+	    		break;
+	    	case "do":
+	    		statementsElement ~= compileDo();
+	    		break;
+	    	case "if":
+	    		statementsElement ~= compileIf();
+	    		break;
+	    	case "while":
+	    		statementsElement ~= compileWhile();
+	    		break;
+	    	case "return":
+	    		statementsElement ~= compileReturn();
+	    		break;
+	    	default:
+	    		break;
+		}
+
+
+	if(keyWord != "if"){
+		if(!advance()){
+			return compileStatements;
+		}
+	}
+		
+	}
+
+	return statementsElement;
+  }
+
+
+  Element compileIf(){
+	Element ifStatementElement= new Element("ifStatement");
+
+	ifStatementElement ~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.keyWord());
+
+
+	if(!advance())
+		return ifStatementElement;
+
+	if(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol()=='(')
+		ifStatementElement~= new Element(to!string(jackTokenizer.tokenType()),to!string(jackTokenizer.symbol()));
+
+
+	if(!advance())
+		return ifStatementElement;
+
+
+	if(!(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol()==')'))
+			 ifStatementElement~=compileExpression();
+	
+
+
+	if(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol()==')')
+	   ifStatementElement~= new Element(to!string(jackTokenizer.tokenType()),to!string(jackTokenizer.symbol()));
+
+	if(!advance())
+		return ifStatementElement;
+
+	if(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol()=='{')
+		ifStatementElement~= new Element(to!string(jackTokenizer.tokenType()),to!string(jackTokenizer.symbol()));
+
+
+	if(!advance())
+		return ifStatementElement;
+
+
+	if(jackTokenizer.tokenType() == Tokens.keyword && (jackTokenizer.keyWord() =="let" || jackTokenizer.keyWord() =="if" || jackTokenizer.keyWord() =="while" || jackTokenizer.keyWord() =="do"||jackTokenizer.keyWord() =="return"))
+		ifStatementElement~= compileStatements();
+
+
+	if(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol()=='}')
+		ifStatementElement~= new Element(to!string(jackTokenizer.tokenType()),to!string(jackTokenizer.symbol()));
+
+
+	if(!advance())
+		return ifStatementElement;
+
+
+
+	if(jackTokenizer.tokenType() == Tokens.keyword && jackTokenizer.keyWord()=="else"){
+
+
+		ifStatementElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.keyWord());
+
+		if(!advance())
+			return ifStatementElement;
+
+		if(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol()=='{')
+			ifStatementElement~= new Element(to!string(jackTokenizer.tokenType()),to!string(jackTokenizer.symbol()));
+
+
+		if(!advance())
+			return ifStatementElement;
+
+
+		if(jackTokenizer.tokenType() == Tokens.keyword && (jackTokenizer.keyWord() =="let" || jackTokenizer.keyWord() =="if" || jackTokenizer.keyWord() =="while" || jackTokenizer.keyWord() =="do"||jackTokenizer.keyWord() =="return"))
+			ifStatementElement~= compileStatements();
+
+
+		if(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol()=='}')
+			ifStatementElement~= new Element(to!string(jackTokenizer.tokenType()),to!string(jackTokenizer.symbol()));
+
+ 
+
+		if(!advance())
+			return ifStatementElement;
+
+
+	}
+
+	return ifStatementElement;
+
+  }
+
+  Element compileReturn(){
+
+	Element returnStatementElement= new Element("returnStatement");
+
+	returnStatementElement ~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.keyWord());
+
+	if(!advance())
+		return returnStatementElement;
+
+	if(!(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol()==';'))
+		returnStatementElement ~= compileExpression();
+
+
+	if(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol()==';')
+		returnStatementElement~= new Element(to!string(jackTokenizer.tokenType()),to!string(jackTokenizer.symbol()));
+
+	return returnStatementElement;
+
+
+  }
+
+
 	bool advance()
 	{
 		if(jackTokenizer.hasMoreTokens())
