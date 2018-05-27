@@ -41,8 +41,8 @@ int main(string[] argv)
 	}
 	*/
 
-//	CompilationEngine a=new CompilationEngine(chomp("C:\\Users\\nissy34\\OneDrive - g.jct.ac.il\\semester B\\Language princibls\\Exercises\\Targil4\\project 10\\ExpressionlessSquare"));
-	CompilationEngine a=new CompilationEngine(chomp("C:\\Users\\nissy34\\source\\repos\\DProjects\\TicTacToe-targil3"));
+	CompilationEngine a=new CompilationEngine(chomp("C:\\Users\\nissy34\\OneDrive - g.jct.ac.il\\semester B\\Language princibls\\Exercises\\Targil4\\project 10\\Square"));
+//	CompilationEngine a=new CompilationEngine(chomp("C:\\Users\\nissy34\\source\\repos\\DProjects\\TicTacToe-targil3"));
 
 
   writeln("finished");

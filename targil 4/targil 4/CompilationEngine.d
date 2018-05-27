@@ -154,7 +154,7 @@ public class CompilationEngine{
 		if((jackTokenizer.tokenType() == Tokens.identifier)||(jackTokenizer.tokenType() == Tokens.keyword && (jackTokenizer.keyWord() =="int" || jackTokenizer.keyWord() =="char" || jackTokenizer.keyWord() =="boolean")))
 			subroutineDecElement ~= parameterList();
 		else 
-			subroutineDecElement ~= new Element("parameterList");
+			subroutineDecElement ~= new Element("parameterList","\n");
 
 
 		
@@ -597,7 +597,7 @@ public class CompilationEngine{
 	        if(!(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() ==')'))
 	        	fatherElement~= compileExpressionList();
 			else 
-				fatherElement~= new Element("expressionList");
+				fatherElement~= new Element("expressionList","\n");
 
 	         
 	         
@@ -633,7 +633,7 @@ public class CompilationEngine{
 			if(!(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() ==')'))
 				fatherElement~= compileExpressionList();
 			else 
-				fatherElement~= new Element("expressionList");
+				fatherElement~= new Element("expressionList","\n");
 
 
 			if(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() ==')')
