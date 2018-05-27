@@ -88,17 +88,21 @@ class SymbolTable
 
 	int KindOf(string name)
 	{
-		if(name in methodST)
+		if((name in methodST)!=null)
 			return methodST[name].index;
-		else
+		else if((name in classST) != null)
 			return classST[name].index;
+		return =1;
 	}
 
 
 	string TypeOf(string name){
 		if((name in methodST) != null)
 			return methodST[name].type;
-		return classST[name].type;
+        if((name in classST) != null)
+			return classST[name].type;
+		return null;
+
 	}
 
 }
