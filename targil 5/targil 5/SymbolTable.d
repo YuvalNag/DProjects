@@ -27,15 +27,41 @@ class SymbolTable
 		methodST.clear();
 	}
 
-	void define(string name,string type,Kind kind)
+	void Define(string name,string type,Kind kind)
 	{
-       switch(kind)
+	   value val;
+	 
+	   val.type=type;
+	   val.kind=kind;
+	 //  val.index=VarCount(kind);
+      
+	   methodST[name]=val;
+      
+	   switch(kind)
 	   {
-		 case Kind.STATIC:
+		 case Kind.FIELD:
+			fieldIndex+=1;
+			break;
+		case Kind.STATIC:
+			staticIndex+=1;
+			break;
+		case Kind.VAR:
+			varIndex+=1;
+			break;
+		case Kind.ARG:
+			argIndex+=1;
+			break;
+		default:
+			break;
 
 	   }
 
 	}
 
+	string TypeOf(string name){
+		if((name in methodST) != null)
+			return methodST[name].type;
+		return classST[name].type;
+	}
 }
 
