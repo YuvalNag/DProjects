@@ -431,5 +431,6 @@
  <Folder name="targil_5">
   <File path="main.d" />
   <File path="SymbolTable.d" />
+  <File path="VMWriter.d" />
  </Folder>
 </DProject>

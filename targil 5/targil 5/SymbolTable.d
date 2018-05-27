@@ -92,7 +92,7 @@ class SymbolTable
 			return methodST[name].index;
 		else if((name in classST) != null)
 			return classST[name].index;
-		return =1;
+		return -1;
 	}
 
 
