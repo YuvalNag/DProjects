@@ -27,7 +27,7 @@ public class CompilationEngine{
 		{
 			writeln("anylazing - ",baseName(file.name));
 			jackTokenizer=new JackTokenizer(file.name);
-			 jackTokenizer.advance();
+			jackTokenizer.advance();
             compileClass();
 			File outFile =File(chainPath(chomp(dirName(file.name)),baseName(file.name,".jack")~"SCheck.xml"),"w");
 	
@@ -92,6 +92,8 @@ public class CompilationEngine{
 	
 		if(jackTokenizer.tokenType() == Tokens.identifier)
 			classVerDecElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.keyWord());
+
+        
 
 		if(!advance())
 			return classVerDecElement;

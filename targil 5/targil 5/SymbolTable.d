@@ -34,23 +34,23 @@ class SymbolTable
 	 
 	   val.type=type;
 	   val.kind=kind;
-	 //  val.index=VarCount(kind);
+	   val.index=VarCount(kind);
       
 	   methodST[name]=val;
       
 	   switch(kind)
 	   {
 		 case Kind.FIELD:
-			fieldIndex+=1;
+			fieldIndex++;
 			break;
 		case Kind.STATIC:
-			staticIndex+=1;
+			staticIndex++;
 			break;
 		case Kind.VAR:
-			varIndex+=1;
+			varIndex++;
 			break;
 		case Kind.ARG:
-			argIndex+=1;
+			argIndex++;
 			break;
 		default:
 			break;
@@ -86,7 +86,7 @@ class SymbolTable
 			return Kind.NONE;
 	}
 
-	int KindOf(string name)
+	int IndexOf(string name)
 	{
 		if((name in methodST)!=null)
 			return methodST[name].index;
