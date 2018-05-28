@@ -69,6 +69,7 @@ public class CompilationEngine{
 
 			while(jackTokenizer.tokenType() == Tokens.keyword && (jackTokenizer.keyWord() =="constructor" || jackTokenizer.keyWord() =="function" || jackTokenizer.keyWord() =="method"))
 			{
+				//לכתוב this אם צריך
 				doc ~= compileSubroutine();
 				if(!advance())
 					return;
@@ -78,6 +79,7 @@ public class CompilationEngine{
 		}
 	}
   
+	// הכנסה לטבלת הסמלים כל הצהרה
   	Element compileClassVerDec()
 	{	
 
@@ -133,12 +135,13 @@ public class CompilationEngine{
 		if(jackTokenizer.tokenType() == Tokens.keyword && (jackTokenizer.keyWord() =="int" || jackTokenizer.keyWord() =="char" || jackTokenizer.keyWord() =="boolean" ||jackTokenizer.keyWord() =="void"))
 			subroutineDecElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.keyWord());
 
-		if(jackTokenizer.tokenType() == Tokens.identifier)
+		else if(jackTokenizer.tokenType() == Tokens.identifier)
 			subroutineDecElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.identifier());
 
 		if(!advance())
 			return subroutineDecElement;
 
+		//לשמור
 		if(jackTokenizer.tokenType() == Tokens.identifier)
 			subroutineDecElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.identifier());
 		
@@ -168,6 +171,8 @@ public class CompilationEngine{
 		return subroutineDecElement;
 	}
   
+
+	//כל אחד לארגומנט
   	Element parameterList()
 	{
 		Element parameterListElement=new Element("parameterList");
@@ -217,7 +222,7 @@ public class CompilationEngine{
        return parameterListElement;
 		
 	}
-  
+    
   	Element subroutineBody(){
 
         Element subroutineBodyElement= new Element("subroutineBody");
@@ -240,6 +245,8 @@ public class CompilationEngine{
 
 		}
 
+        //לכתוב function class.name nLocals
+
 		if(jackTokenizer.tokenType() == Tokens.keyword && (jackTokenizer.keyWord() =="let" || jackTokenizer.keyWord() =="if" || jackTokenizer.keyWord() =="while" || jackTokenizer.keyWord() =="do"||jackTokenizer.keyWord() =="return"))
 			subroutineBodyElement~= compileStatements();
         
@@ -254,7 +261,7 @@ public class CompilationEngine{
 
 
 	}
-  
+  //לכתוב גוף הפונקציה
     Element compileStatements(){
 	
 	Element statementsElement= new Element("statements");
@@ -399,7 +406,7 @@ public class CompilationEngine{
 
 
   }
-  
+  //הוספה לוקאלי
   	Element compileVarDec()
 	{	
 		Element varDecElement=new Element("varDec");

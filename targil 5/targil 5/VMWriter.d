@@ -12,17 +12,21 @@ import std.uni;
 import std.ascii;
 
 
-immutable enum SEGMENT {STATIC,THIS,CONST,LOCAL,ARG,TEMP,POINTER,THAT};
+ enum SEGMENT {STATIC,THIS,CONST,LOCAL,ARG,TEMP,POINTER,THAT};
 enum Commands {ADD,SUB ,NEG ,EQ, GT, LT ,AND ,OR ,NOT};
 
  
+
+
+
 
 class VMWriter
 {
 
 	File vmFile;
 
-	    string[SEGMENT] segments;
+
+	 string[SEGMENT] segments;
 		
 
 	this(string path)
@@ -38,21 +42,61 @@ class VMWriter
 		segments[SEGMENT.THAT   ]="that";
 	}
 
-	void writePush()
+	void writePush(SEGMENT segment,int index)
 	{
-
+		vmFile.writeln("push ",segments[segment]," "~to!string(index));
 	}
+
+	void writePop(SEGMENT segment,int index)
+	{
+		vmFile.writeln("pop ",segments[segment]," "~to!string(index));
+	}
+
 
 	void writeArithmetic(Commands command)
 	{
        vmFile.writeln(to!string(command).toLower());
 	}
 
-aw
+
 
 	void close(){
 		vmFile.close();
 	}
+
+
+	void writeLabel(string label)
+	{
+		vmFile.writeln("label ",label);
+	}
+
+	void writeGoto(string label)
+	{
+		vmFile.writeln("goto",label);
+	}
+
+	void writeIf(string label)
+	{
+		vmFile.writeln("if-goto",label);
+	}
+
+	void writeCall(string name,int nArgs)
+	{
+		vmFile.writeln("call",name," "~to!string(nArgs));
+	}
+
+	void writeFunction(string name,int nLocals)
+	{
+		vmFile.writeln("function",name," "~to!string(nLocals));
+	}
+
+	void writeReturn()
+	{
+		vmFile.writeln("return");
+	}
+
+
+
 
 
 }
