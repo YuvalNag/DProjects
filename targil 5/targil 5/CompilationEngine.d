@@ -183,39 +183,31 @@ public class CompilationEngine{
 
 
 		if(method){
+			//**push argument 0
 			vmWriter.writePush(SEGMENT.ARG,0);
+
+            //**pop pointer 0
 			vmWriter.writePop(SEGMENT.POINTER,0);
 		}
 		else if(ctor)
 		{
+			//*!* if constructor
+			//** puse constent #ofFields
 			vmWriter.writePush(SEGMENT.CONST,symbolTable.VarCount(Kind.FIELD));
+
+			//** call Memory.alloc 1
 			vmWriter.writeCall("Memory.alloc ",1);
+
+			//** pop pointer 0 
 			vmWriter.writePop(SEGMENT.POINTER,0);
 			
 
 		}
-		//*!* if constructor
-		//** puse constent #ofFields
-        //** call Memory.alloc 1
-		//** pop pointer 0
-
-		//*!* if method
-		//**push argument 0
-		//**pop pointer 0
-		 
 	
-
-
-
-
 		//subroutineBody
 		compileStatements();
 
-
-
 		// }
-
-
 
 	}
   
@@ -806,6 +798,8 @@ public class CompilationEngine{
 				advance();
 				break;
 			case Tokens.stringConstant:
+				
+				//stringConstent
 				string str =jackTokenizer.stringval();
 				vmWriter.writePush(SEGMENT.CONST,str.length);
 				vmWriter.writeCall("String.new",1);
@@ -815,42 +809,31 @@ public class CompilationEngine{
 					vmWriter.writePush(SEGMENT.CONST,str[i]);
 					vmWriter.writeCall("String.appendChar",2);
 				}
-				//stringConstent
-				//**push constant length of string
-				//**call String.new 1
-				//**push constant 97
-				//**call String.appendChar 2
-				//**push constant 98
-				//**call String.appendChar 2
-				//**push constant 99
-				//**call String.appendChar 2
-                //** .
-				//** .
-				//** .
+				
+				
 				advance();
 				break;
 			case Tokens.keyword :
 				//keywordConstent
-				//**if this -> push pointer 0
+				
 				switch(jackTokenizer.keyWord())
 				{
-					case "this":
+					case "this"://**if this -> push pointer 0
 						vmWriter.writePush(SEGMENT.POINTER,0);
 						break;
+						//**if true -> push constent 0
+						//**           not
 					case "true":
 						vmWriter.writePush(SEGMENT.CONST,0);
 						vmWriter.writeArithmetic(Commands.NOT);
 						break;
-					case "null":						
+					case "null"://**if false || null -> push constent 0						
 					case "false":
 						vmWriter.writePush(SEGMENT.CONST,0);
 						break;
 						default:
 							break;
 				}
-                //**if false || null -> push constent 0
-				//**if true -> push constent 0
-				//**           not
 				advance();
 				break;
 			case Tokens.symbol :
@@ -858,17 +841,20 @@ public class CompilationEngine{
 				//unaryOp term
 				if( jackTokenizer.symbol() =='-' || jackTokenizer.symbol() =='~')
 				{
+					char op=jackTokenizer.symbol();
 					//unaryOp
 					advance();
 
 					//term
 					compileTerm();
-					if(jackTokenizer.symbol() =='-')
+
+					//**unary Op
+					if(op =='-')
 						vmWriter.writeArithmetic(Commands.NEG);
 					else
 						vmWriter.writeArithmetic(Commands.NOT);
 
-					//**unary Op
+					
 					break;
 				}
 				//(expression)
@@ -904,16 +890,19 @@ public class CompilationEngine{
 
 					//expression
 					compileExpression();
+
 					//**push varName
 					vmWriter.writePush(kindToSegment(symbolTable.KindOf(tempTokenValue)),symbolTable.IndexOf(tempTokenValue));
 
 					//**add
 					 vmWriter.writeArithmetic(Commands.ADD);
+
 					//**pop pointer 1
 					 vmWriter.writePop(SEGMENT.POINTER,1);
 
 					 //**push that 0
 					 vmWriter.writePush(SEGMENT.THAT,0);
+
 					//]
 					
 					advance();
@@ -928,7 +917,8 @@ public class CompilationEngine{
 					break;
 				}
 				else
-				{
+				{   
+					//**push varName
 					vmWriter.writePush(kindToSegment(symbolTable.KindOf(tempTokenValue)),symbolTable.IndexOf(tempTokenValue));
 				}
 			break;
@@ -936,7 +926,7 @@ public class CompilationEngine{
 			default:
 				break;
 		}
-		//;?????
+		
 
 	}
 
@@ -963,7 +953,7 @@ public class CompilationEngine{
 			case Kind.STATIC:
 				return SEGMENT.STATIC;
 			default:
-					return SEGMENT.STATIC;
+				return SEGMENT.STATIC;
 			
 			
 		}
