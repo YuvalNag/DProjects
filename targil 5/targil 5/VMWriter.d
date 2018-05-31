@@ -72,22 +72,22 @@ class VMWriter
 
 	void writeGoto(string label)
 	{
-		vmFile.writeln("goto",label);
+		vmFile.writeln("goto ",label);
 	}
 
 	void writeIf(string label)
 	{
-		vmFile.writeln("if-goto",label);
+		vmFile.writeln("if-goto ",label);
 	}
 
 	void writeCall(string name,int nArgs)
 	{
-		vmFile.writeln("call",name," "~to!string(nArgs));
+		vmFile.writeln("call ",name," "~to!string(nArgs));
 	}
 
 	void writeFunction(string name,int nLocals)
 	{
-		vmFile.writeln("function",name," "~to!string(nLocals));
+		vmFile.writeln("function ",name," "~to!string(nLocals));
 	}
 
 	void writeReturn()

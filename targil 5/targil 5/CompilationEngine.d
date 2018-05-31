@@ -18,30 +18,36 @@ public class CompilationEngine{
 	Document doc;
 	JackTokenizer jackTokenizer;
 	string path;
-
+	string className;
+	SymbolTable symbolTable;
+	VMWriter vmWriter;
 	this(string path)
 	{
-
+		this.path =path;
 		auto Files = dirEntries(chomp(path), SpanMode.shallow).filter!(f => f.name.endsWith(".jack") && f.isFile);
 		foreach (file; Files)
 		{
 			writeln("anylazing - ",baseName(file.name));
 			jackTokenizer=new JackTokenizer(file.name);
 			jackTokenizer.advance();
+<<<<<<< HEAD
             compileClass();
+=======
+            vmWriter=new VMWriter(path);
+			compileClass();
+>>>>>>> 143bfb20e75600bccaa73cfc5916bc5963721d1a
 			File outFile =File(chainPath(chomp(dirName(file.name)),baseName(file.name,".jack")~"SCheck.xml"),"w");
-	
-
 			outFile.writefln(join(doc.pretty(3),"\n"));
 			outFile.close();
 		}
-
+		
 	}
 	
   	void compileClass()
 	{
 		if(jackTokenizer.tokenType() == Tokens.keyword && jackTokenizer.keyWord() =="class")
 		{
+			symbolTable=new SymbolTable(path);
 			doc = new Document(new Tag(jackTokenizer.keyWord()));
 			doc ~=new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.keyWord());
 			
@@ -49,8 +55,10 @@ public class CompilationEngine{
 				return;
 
 			if(jackTokenizer.tokenType() == Tokens.identifier)
+			{
+				className=jackTokenizer.identifier();
 				doc ~=new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.identifier());
-
+			}
 			if(!advance())
 				return;
 
@@ -79,8 +87,12 @@ public class CompilationEngine{
 	}
   
   	Element compileClassVerDec()
-	{	
-
+	{	Kind kind;
+		string type;
+		if(jackTokenizer.keyWord() =="static") 
+			kind =Kind.STATIC;		
+		if (jackTokenizer.keyWord() =="field")
+			kind =Kind.FIELD;		
 		Element classVerDecElement=new Element("classVarDec");
 		classVerDecElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.keyWord());
 		
@@ -88,10 +100,16 @@ public class CompilationEngine{
 			return classVerDecElement;
 		
 		if(jackTokenizer.tokenType() == Tokens.keyword && (jackTokenizer.keyWord() =="int" || jackTokenizer.keyWord() =="char" || jackTokenizer.keyWord() =="boolean"))
+		{		
 			classVerDecElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.keyWord());
+			type =jackTokenizer.keyWord();
+		}
 	
-		if(jackTokenizer.tokenType() == Tokens.identifier)
-			classVerDecElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.keyWord());
+		else if(jackTokenizer.tokenType() == Tokens.identifier)
+		{		
+			classVerDecElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.identifier());
+			type =jackTokenizer.keyWord();
+		}
 
         
 
@@ -99,8 +117,10 @@ public class CompilationEngine{
 			return classVerDecElement;
 
 		if(jackTokenizer.tokenType() == Tokens.identifier)
-			classVerDecElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.keyWord());
-
+		{
+			classVerDecElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.identifier());
+			symbolTable.Define(jackTokenizer.identifier(),type,kind);
+		}	
 		if(!advance())
 			return classVerDecElement;
 
@@ -112,8 +132,10 @@ public class CompilationEngine{
 				return classVerDecElement;
 
 			if(jackTokenizer.tokenType() == Tokens.identifier)
+			{
 				classVerDecElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.identifier());
-
+				symbolTable.Define(jackTokenizer.identifier(),type,kind);
+			}
 			if(!advance())
 				return classVerDecElement;
 		}
@@ -126,6 +148,11 @@ public class CompilationEngine{
   
   	Element compileSubroutine()
 	{
+		string subroutineName;
+		symbolTable.startSubroutine();
+		if(jackTokenizer.keyWord() =="method")
+			symbolTable.Define("this",className,Kind.ARG);
+
 		Element subroutineDecElement=new Element("subroutineDec");
 		subroutineDecElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.keyWord());
 
@@ -142,8 +169,10 @@ public class CompilationEngine{
 			return subroutineDecElement;
 
 		if(jackTokenizer.tokenType() == Tokens.identifier)
+		{
 			subroutineDecElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.identifier());
-		
+			subroutineName =jackTokenizer.identifier();
+		}
 		if(!advance())
 			return subroutineDecElement;
 
@@ -158,7 +187,6 @@ public class CompilationEngine{
 		else 
 			subroutineDecElement ~= new Element("parameterList","\n");
 
-
 		
 
 		if(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() ==')')
@@ -167,11 +195,14 @@ public class CompilationEngine{
 
 		subroutineDecElement ~= subroutineBody();
 
+
 		return subroutineDecElement;
 	}
   
   	Element parameterList()
 	{
+		Kind kind=Kind.ARG;
+		string type;
 		Element parameterListElement=new Element("parameterList");
 
 
@@ -179,7 +210,10 @@ public class CompilationEngine{
 			parameterListElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.keyWord());
 
 		if(jackTokenizer.tokenType() == Tokens.identifier)
-			parameterListElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.keyWord());
+			parameterListElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.identifier());
+
+
+		type=jackTokenizer.identifier();
 
 		if(!advance())
 			return parameterListElement;
@@ -188,6 +222,7 @@ public class CompilationEngine{
        	if(jackTokenizer.tokenType() == Tokens.identifier)
 			parameterListElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.identifier());
 
+		symbolTable.Define(jackTokenizer.identifier(),type,kind);
 		if(!advance())
 			return parameterListElement;
 
@@ -200,9 +235,11 @@ public class CompilationEngine{
 
 			if(jackTokenizer.tokenType() == Tokens.keyword && (jackTokenizer.keyWord() =="int" || jackTokenizer.keyWord() =="char" || jackTokenizer.keyWord() =="boolean"))
 				parameterListElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.keyWord());
-
+			
 			if(jackTokenizer.tokenType() == Tokens.identifier)
 				parameterListElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.keyWord());
+
+			type=jackTokenizer.identifier();
 
 			if(!advance())
 				return parameterListElement;
@@ -210,18 +247,17 @@ public class CompilationEngine{
 
 			if(jackTokenizer.tokenType() == Tokens.identifier)
 				parameterListElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.identifier());
-
+			symbolTable.Define(jackTokenizer.identifier(),type,kind);
 			if(!advance())
 				return parameterListElement;
-
 		}
 
        return parameterListElement;
-		
 	}
   
   	Element subroutineBody(){
-
+		
+		
         Element subroutineBodyElement= new Element("subroutineBody");
 
 		if(!advance())
@@ -232,15 +268,15 @@ public class CompilationEngine{
 		
 		if(!advance())
 			return subroutineBodyElement;
-
+		
 		while(jackTokenizer.tokenType() == Tokens.keyword && jackTokenizer.keyWord() =="var")
 		{
 			subroutineBodyElement ~= compileVarDec();
 			
 			if(!advance())
 				return subroutineBodyElement;
-
 		}
+		vmWriter.writeFunction(className~"."~subroutineName,symbolTable.VarCount(Kind.VAR));
 
 		if(jackTokenizer.tokenType() == Tokens.keyword && (jackTokenizer.keyWord() =="let" || jackTokenizer.keyWord() =="if" || jackTokenizer.keyWord() =="while" || jackTokenizer.keyWord() =="do"||jackTokenizer.keyWord() =="return"))
 			subroutineBodyElement~= compileStatements();
@@ -404,6 +440,8 @@ public class CompilationEngine{
   
   	Element compileVarDec()
 	{	
+		Kind kind=Kind.VAR;
+		string type;
 		Element varDecElement=new Element("varDec");
 		varDecElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.keyWord());
 
@@ -417,13 +455,14 @@ public class CompilationEngine{
 		if(jackTokenizer.tokenType() == Tokens.identifier)
 			varDecElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.identifier());
 
+		type=jackTokenizer.identifier();
 		if(!advance())
 			return varDecElement;
 		
 		//varName
 		if(jackTokenizer.tokenType() == Tokens.identifier)
 			varDecElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.identifier());
-
+		symbolTable.Define(jackTokenizer.identifier(),type,kind);
 		if(!advance())
 			return varDecElement;
 
@@ -431,12 +470,14 @@ public class CompilationEngine{
 		while(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() ==',')
 		{
 			varDecElement~= new Element(to!string(jackTokenizer.tokenType()),to!string(jackTokenizer.symbol()));
-
+			
 			if(!advance())
 				return varDecElement;
 
 			if(jackTokenizer.tokenType() == Tokens.identifier)
 				varDecElement~= new Element(to!string(jackTokenizer.tokenType()),jackTokenizer.identifier());
+			
+			symbolTable.Define(jackTokenizer.identifier(),type,kind);
 
 			if(!advance())
 				return varDecElement;

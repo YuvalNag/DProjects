@@ -34,9 +34,13 @@ class SymbolTable
 	 
 	   val.type=type;
 	   val.kind=kind;
-	   val.index=VarCount(kind);
-      
-	   methodST[name]=val;
+
+	  val.index=VarCount(kind);
+      if(kind==Kind.STATIC ||kind ==Kind.FIELD)
+		  classST[name]=val;
+	  else
+		  methodST[name]=val;
+
       
 	   switch(kind)
 	   {
