@@ -126,7 +126,8 @@ public class CompilationEngine{
 	{
 		string subroutineName;
 		symbolTable.startSubroutine();
-
+       
+		//(constructor | method | function)
 
 		if(jackTokenizer.keyWord() =="method")
 			symbolTable.Define("this",className,Kind.ARG);
@@ -174,7 +175,8 @@ public class CompilationEngine{
 
 		vmWriter.writeFunction(className~"."~subroutineName,symbolTable.VarCount(Kind.VAR));
 
-        //subroutineBody
+        
+		//subroutineBody
 		compileStatements();
 
 
@@ -303,7 +305,10 @@ public class CompilationEngine{
 	    //expression
 		if(!(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol()==')'))
 				 compileExpression();
-		
+	    //**counter for label?
+		//**if-goto IF_TRUE0
+		//**goto IF_FALSE0
+	    //**label IF_TRUE0
 	
 	
 		// )
@@ -328,6 +333,9 @@ public class CompilationEngine{
 	   //else
 		if(jackTokenizer.tokenType() == Tokens.keyword && jackTokenizer.keyWord()=="else"){
 			
+			//**goto IF_END0
+			//**label IF_FALSE0
+
 			advance();
 	
 			// {
@@ -338,12 +346,19 @@ public class CompilationEngine{
 			//statements
 			compileStatements();
 
+            //**label IF_END0
+
 
 			//}
 	
 			advance();
 	
 	
+		}
+		else
+		{
+			//**label IF_FALSE0
+
 		}
 	
 		
@@ -360,6 +375,7 @@ public class CompilationEngine{
 		if(!(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol()==';'))
 			compileExpression();
 
+		//**return
 
 		// ;
 
@@ -407,11 +423,15 @@ public class CompilationEngine{
   
   	void compileLet()
 	{	
+		bool isArray=false; 
+		string type,varName;
+
 		//let
 
 		advance();
 
 		//varName
+        varName=jackTokenizer.identifier();
 
 		advance();
 
@@ -419,6 +439,7 @@ public class CompilationEngine{
 		//[ expression ]
 		if(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() =='[')
 		{	
+			isArray=true; 
 			// [
 			advance();
 		
@@ -428,6 +449,9 @@ public class CompilationEngine{
 
 
 			//]
+
+			//**push varName
+			//**add
 			
 			advance();
 		}
@@ -438,6 +462,18 @@ public class CompilationEngine{
 
 		//expression
 		compileExpression();
+
+		if(isArray)
+		{
+			//**pop temp 0
+			//**pop pointer 1
+			//**push temp 0
+			//**pop that 0
+		}
+		else
+		{
+			//**pop varName
+		}
 		
 		//;
 		
@@ -451,12 +487,17 @@ public class CompilationEngine{
 
 		    // (
 		
+		    //**label WHILE_EXP0
 
 			advance();
 
 
 			//expression
 			compileExpression();
+	
+			//**not
+			//**if-goto WHILE_END0
+			
 			
 			//)
 			advance();
@@ -470,6 +511,8 @@ public class CompilationEngine{
 			//Statements
 			compileStatements();
 
+			//**goto WHILE_EXP0
+			//**label WHILE_END0
 
 			//}
 			
@@ -487,6 +530,8 @@ public class CompilationEngine{
 
 
 		//;
+
+		//**pop temp 0
 	
 
 		
@@ -503,11 +548,16 @@ public class CompilationEngine{
 
 		}
 
+		//** save name as firstVAR
+
 
         //(expressionList)
 		if(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() =='(')
 		{
 			// (
+ 
+            //** push pointer 0
+			
 
 
 	        advance();
@@ -516,10 +566,14 @@ public class CompilationEngine{
 	        if(!(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() ==')'))
 	        	compileExpressionList();
 			
-
+            //**  call className.subName nArgs+1
+			
 	         
 	         
 	        // )
+
+
+			
 	             
 	       	
 		}
@@ -527,6 +581,9 @@ public class CompilationEngine{
          //(className |varName)
 		else if(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() =='.')
 		{
+			//** if firstVAR is in symboltable  
+			//** push firstVAR
+			
 			//.
 			advance();
 
@@ -549,9 +606,12 @@ public class CompilationEngine{
 
 	        // )
 
-			
+			//** if firstVAR is in symboltable  
+			//** call (typeOf(verName).verName) nArgs+1
+			//**
+			//** if firstVAR is not symboltable 
+			//** call (firstVAR.verName) nArgs
 		}
-
 
 
 		advance();
@@ -585,6 +645,8 @@ public class CompilationEngine{
 			//term
 			compileTerm();
 
+			//push op
+
 
 		}
 		
@@ -617,14 +679,20 @@ public class CompilationEngine{
 		{
 			case Tokens.integerConstant:
 				//integerConstent
+				//**push consternt (value)
 				advance();
 				break;
 			case Tokens.stringConstant:
 				//stringConstent
+				//
 				advance();
 				break;
 			case Tokens.keyword :
 				//keywordConstent
+				//**if this -> push pointer 0
+                //**if false || null -> push constent 0
+				//**if true -> push constent 0
+				//**           not
 				advance();
 				break;
 			case Tokens.symbol :
@@ -637,6 +705,8 @@ public class CompilationEngine{
 
 					//term
 					compileTerm();
+
+					//**unary Op
 					break;
 				}
 				//(expression)
@@ -667,12 +737,16 @@ public class CompilationEngine{
 				{					
 					//[
 					
-
+                    
 					advance();
 
 					//expression
 					compileExpression();
 
+					//**push varName
+                    //**add
+                    //**pop pointer 1
+					//**push that 0
 					//]
 					
 					advance();
