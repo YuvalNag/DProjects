@@ -36,9 +36,7 @@ public class CompilationEngine{
             vmWriter=new VMWriter(path);
 			compileClass();
 
-			File outFile =File(chainPath(chomp(dirName(file.name)),baseName(file.name,".jack")~"SCheck.xml"),"w");
-			outFile.writefln(join(doc.pretty(3),"\n"));
-			outFile.close();
+			vmWriter.close();
 		}
 		
 	}
@@ -74,7 +72,7 @@ public class CompilationEngine{
             //classVarDec*
 			while(jackTokenizer.keyWord() =="constructor" || jackTokenizer.keyWord() =="function" || jackTokenizer.keyWord() =="method")
 			{
-				compileSubroutineDec();
+				compileSubroutine();
 				
 				advance();
 			}
@@ -122,7 +120,7 @@ public class CompilationEngine{
 		
 	}
   
-  	void compileSubroutineDec()
+  	void compileSubroutine()
 	{
 		string subroutineName;
 		symbolTable.startSubroutine();
@@ -175,7 +173,21 @@ public class CompilationEngine{
 
 		vmWriter.writeFunction(className~"."~subroutineName,symbolTable.VarCount(Kind.VAR));
 
-        
+
+		//*!* if constructor
+		//** puse constent #ofFields
+        //** call Memory.alloc 1
+		//** pop pointer 0
+
+		//*!* if method
+		//**push argument 0
+		//**pop pointer 0
+		 
+	
+
+
+
+
 		//subroutineBody
 		compileStatements();
 
@@ -224,36 +236,6 @@ public class CompilationEngine{
 
       
 	}
-  
-	//void subroutineBody(){
-	//    
-	//
-	//    advance();
-	//
-	//    // {
-	//    
-	//    advance();
-	//    
-	//    //varDec*
-	//    while(jackTokenizer.tokenType() == Tokens.keyword && jackTokenizer.keyWord() =="var")
-	//    {
-	//        compileVarDec();
-	//        
-	//        advance();
-	//    }
-	//
-	//    vmWriter.writeFunction(className~"."~subroutineName,symbolTable.VarCount(Kind.VAR));
-	//
-	//    //subroutineBody
-	//    compileStatements();
-	//    
-	//
-	//
-	//    // }
-	//
-	//
-	//
-	//}
   
     void compileStatements(){
 		//("let" "if" "while" "do" "return")
@@ -548,7 +530,7 @@ public class CompilationEngine{
 
 		}
 
-		//** save name as firstVAR
+		//*!* save name as firstVAR
 
 
         //(expressionList)
@@ -645,9 +627,10 @@ public class CompilationEngine{
 			//term
 			compileTerm();
 
-			//push op
-
-
+			//**if op==* -> call Math.multiply 2
+            //**if op==/ -> call Math.divide 2
+			//**else write op
+		
 		}
 		
 	}
@@ -684,7 +667,17 @@ public class CompilationEngine{
 				break;
 			case Tokens.stringConstant:
 				//stringConstent
-				//
+				//**push constant length of string
+				//**call String.new 1
+				//**push constant 97
+				//**call String.appendChar 2
+				//**push constant 98
+				//**call String.appendChar 2
+				//**push constant 99
+				//**call String.appendChar 2
+                //** .
+				//** .
+				//** .
 				advance();
 				break;
 			case Tokens.keyword :
