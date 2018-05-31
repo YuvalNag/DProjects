@@ -1,20 +1,14 @@
 import std.stdio;
-enum Kind {STATIC,FIELD,VAR,ARG,NONE};
+import CompilationEngine;
 
-struct value
-{
-	string type;
-	Kind kind;
-	int  index;
-}
+
 
 int main(string[] argv)
 {
-    value[string] classST;
-	value[string] methodST;
-    value a;
-	if(("a" in methodST) != null)
-		a= methodST["a"];
+       // CompilationEngine a=new CompilationEngine("C:\\Users\\nissy34\\OneDrive - g.jct.ac.il\\semester B\\Language princibls\\Exercises\\Targil5\\project 11\\ComplexArrays");
+
+		CompilationEngine a=new CompilationEngine("C:\\Users\\nissy34\\OneDrive - g.jct.ac.il\\semester B\\Language princibls\\Exercises\\Targil3\\project 09\\TicTacToe");
+
 	
     return 0;
 }

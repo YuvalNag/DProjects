@@ -23,6 +23,8 @@ public class CompilationEngine{
 	string className;
 	SymbolTable symbolTable;
 	VMWriter vmWriter;
+	int ifLabelCounter;
+	int whileLabelCounter;
 	this(string path)
 	{
 		this.path =path;
@@ -32,8 +34,9 @@ public class CompilationEngine{
 			writeln("anylazing - ",baseName(file.name));
 			jackTokenizer=new JackTokenizer(file.name);
 			jackTokenizer.advance();
-
-            vmWriter=new VMWriter(path);
+            ifLabelCounter=0;
+			whileLabelCounter=0;
+            vmWriter=new VMWriter(file.name);
 			compileClass();
 
 			vmWriter.close();
@@ -63,7 +66,7 @@ public class CompilationEngine{
             //classVarDec*
 			while(jackTokenizer.keyWord() =="static" || jackTokenizer.keyWord() =="field")
 			{
-				//doc ~= compileClassVerDec();
+				
 				compileClassVerDec();
 				
 				advance();
@@ -123,12 +126,17 @@ public class CompilationEngine{
   	void compileSubroutine()
 	{
 		string subroutineName;
+		bool method=false,ctor=false;
 		symbolTable.startSubroutine();
        
 		//(constructor | method | function)
 
-		if(jackTokenizer.keyWord() =="method")
+		if(jackTokenizer.keyWord() =="method"){
 			symbolTable.Define("this",className,Kind.ARG);
+			method=true;
+		}
+		else if(jackTokenizer.keyWord() =="constructor")
+			ctor=true;
 
 		advance();
 
@@ -174,6 +182,18 @@ public class CompilationEngine{
 		vmWriter.writeFunction(className~"."~subroutineName,symbolTable.VarCount(Kind.VAR));
 
 
+		if(method){
+			vmWriter.writePush(SEGMENT.ARG,0);
+			vmWriter.writePop(SEGMENT.POINTER,0);
+		}
+		else if(ctor)
+		{
+			vmWriter.writePush(SEGMENT.CONST,symbolTable.VarCount(Kind.FIELD));
+			vmWriter.writeCall("Memory.alloc ",1);
+			vmWriter.writePop(SEGMENT.POINTER,0);
+			
+
+		}
 		//*!* if constructor
 		//** puse constent #ofFields
         //** call Memory.alloc 1
@@ -274,7 +294,7 @@ public class CompilationEngine{
   }
   
     void compileIf(){
-	
+		int currentIndex=ifLabelCounter++;
 		//if
 
 		advance();
@@ -287,7 +307,12 @@ public class CompilationEngine{
 	    //expression
 		if(!(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol()==')'))
 				 compileExpression();
-	    //**counter for label?
+	    
+		vmWriter.writeIf("IF_TRUE"~to!string(currentIndex));
+		vmWriter.writeGoto("IF_FALSE"~to!string(currentIndex));
+		vmWriter.writeLabel("IF_TRUE"~to!string(currentIndex));
+        
+		//*!* need counter for label
 		//**if-goto IF_TRUE0
 		//**goto IF_FALSE0
 	    //**label IF_TRUE0
@@ -316,7 +341,13 @@ public class CompilationEngine{
 		if(jackTokenizer.tokenType() == Tokens.keyword && jackTokenizer.keyWord()=="else"){
 			
 			//**goto IF_END0
+			vmWriter.writeGoto("IF_END"~to!string(currentIndex));
+
 			//**label IF_FALSE0
+			vmWriter.writeLabel("IF_FALSE"~to!string(currentIndex));
+
+			
+			
 
 			advance();
 	
@@ -328,7 +359,10 @@ public class CompilationEngine{
 			//statements
 			compileStatements();
 
+			
+
             //**label IF_END0
+			vmWriter.writeLabel("IF_END"~to!string(currentIndex));
 
 
 			//}
@@ -340,6 +374,8 @@ public class CompilationEngine{
 		else
 		{
 			//**label IF_FALSE0
+			vmWriter.writeLabel("IF_FALSE"~to!string(currentIndex));
+
 
 		}
 	
@@ -356,8 +392,14 @@ public class CompilationEngine{
 		//expression?
 		if(!(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol()==';'))
 			compileExpression();
+		else
+		{
+			vmWriter.writePush(SEGMENT.CONST,0);
+
+		}
 
 		//**return
+		vmWriter.writeReturn();
 
 		// ;
 
@@ -433,8 +475,11 @@ public class CompilationEngine{
 			//]
 
 			//**push varName
+			vmWriter.writePush(kindToSegment(symbolTable.KindOf(varName)),symbolTable.IndexOf(varName));
+
 			//**add
-			
+			vmWriter.writeArithmetic(Commands.ADD);
+
 			advance();
 		}
 
@@ -448,13 +493,24 @@ public class CompilationEngine{
 		if(isArray)
 		{
 			//**pop temp 0
+			vmWriter.writePop(SEGMENT.TEMP,0);
+
 			//**pop pointer 1
+			vmWriter.writePop(SEGMENT.POINTER,1);
+
 			//**push temp 0
+			vmWriter.writePush(SEGMENT.TEMP,0);
+
+
 			//**pop that 0
+			vmWriter.writePop(SEGMENT.THAT,0);
 		}
 		else
 		{
+
 			//**pop varName
+			vmWriter.writePop(kindToSegment(symbolTable.KindOf(varName)),symbolTable.IndexOf(varName));
+
 		}
 		
 		//;
@@ -464,12 +520,15 @@ public class CompilationEngine{
   	void compileWhile()
 	{	
 		//while
-
+        string currentCounter=to!string(whileLabelCounter++);
 		advance();
 
 		    // (
-		
+		    
+		    //*!* need a counting lable
 		    //**label WHILE_EXP0
+		   vmWriter.writeLabel("WHILE_EXP"~currentCounter);
+
 
 			advance();
 
@@ -477,8 +536,13 @@ public class CompilationEngine{
 			//expression
 			compileExpression();
 	
+
 			//**not
+			vmWriter.writeArithmetic(Commands.NOT);
+
 			//**if-goto WHILE_END0
+			vmWriter.writeIf("WHILE_END"~currentCounter);
+
 			
 			
 			//)
@@ -494,7 +558,11 @@ public class CompilationEngine{
 			compileStatements();
 
 			//**goto WHILE_EXP0
+			vmWriter.writeGoto("WHILE_EXP"~currentCounter);
+
 			//**label WHILE_END0
+			vmWriter.writeLabel("WHILE_END"~currentCounter);
+
 
 			//}
 			
@@ -514,6 +582,8 @@ public class CompilationEngine{
 		//;
 
 		//**pop temp 0
+		vmWriter.writePop(SEGMENT.TEMP,0);
+
 	
 
 		
@@ -521,17 +591,25 @@ public class CompilationEngine{
   
   	void compileSubroutineCall(string PrevIdentifier=null)
 	{
+		string firstVAR=jackTokenizer.identifier();
+
 		if(PrevIdentifier==null)
 		{
 			
 			//subroutineName || className || varName
 
+			firstVAR=jackTokenizer.identifier();
 			advance();
-
+            
+		}
+		else
+		{
+			firstVAR=PrevIdentifier;
 		}
 
-		//*!* save name as firstVAR
 
+		//*!* save name as firstVAR
+        
 
         //(expressionList)
 		if(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() =='(')
@@ -539,16 +617,20 @@ public class CompilationEngine{
 			// (
  
             //** push pointer 0
-			
+			vmWriter.writePush(SEGMENT.POINTER,0);
+
 
 
 	        advance();
 	         
+	        int  nArgs=0;
 	         //expressionList
 	        if(!(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() ==')'))
-	        	compileExpressionList();
+	        	nArgs=compileExpressionList();
 			
             //**  call className.subName nArgs+1
+			vmWriter.writeCall(className~"."~firstVAR,nArgs+1);
+
 			
 	         
 	         
@@ -563,13 +645,20 @@ public class CompilationEngine{
          //(className |varName)
 		else if(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() =='.')
 		{
-			//** if firstVAR is in symboltable  
-			//** push firstVAR
-			
+			bool isFunction=false;
+			//** if firstVAR is in symboltable 
+            if(symbolTable.KindOf(firstVAR)==Kind.NONE)
+               isFunction=true;
+
+			if(!isFunction)
+				//** push firstVAR
+				vmWriter.writePush(kindToSegment(symbolTable.KindOf(firstVAR)),symbolTable.IndexOf(firstVAR));
+
 			//.
 			advance();
 
             //subroutineName
+			string subName=jackTokenizer.identifier();
 
 			advance();
 
@@ -580,8 +669,9 @@ public class CompilationEngine{
 
 
 			//expressionList
+			int nArgs=0;
 	        if(!(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() ==')'))
-	        	compileExpressionList();
+	        	nArgs=compileExpressionList();
 
 
 
@@ -589,10 +679,17 @@ public class CompilationEngine{
 	        // )
 
 			//** if firstVAR is in symboltable  
-			//** call (typeOf(verName).verName) nArgs+1
-			//**
+			//** call (typeOf(verName).verName) nArgs+
+//**
 			//** if firstVAR is not symboltable 
 			//** call (firstVAR.verName) nArgs
+			if(!isFunction)
+				vmWriter.writeCall(symbolTable.TypeOf(firstVAR)~"."~subName,nArgs+1);
+			else
+				vmWriter.writeCall(firstVAR~"."~subName,nArgs);
+
+
+			
 		}
 
 
@@ -605,6 +702,7 @@ public class CompilationEngine{
 	void compileExpression()
 	{
    
+		char op;
 		//term
 		compileTerm();
 
@@ -621,35 +719,76 @@ public class CompilationEngine{
 		{
             
 			//op
-
+             op=jackTokenizer.symbol();
 			advance();
 
 			//term
 			compileTerm();
 
-			//**if op==* -> call Math.multiply 2
-            //**if op==/ -> call Math.divide 2
-			//**else write op
+			switch(op){
+				case '+':
+					vmWriter.writeArithmetic(Commands.ADD);
+					break;
+				case '-':
+					vmWriter.writeArithmetic(Commands.SUB);
+					break;
+				case '*':
+					vmWriter.writeCall("Math.multiply",2);
+					break;
+				case '/':
+					vmWriter.writeCall("Math.divide",2);
+					break;
+				case '&':
+					vmWriter.writeArithmetic(Commands.AND);
+					break;
+				case '|':
+					vmWriter.writeArithmetic(Commands.OR);
+					break;
+				case '<':
+					vmWriter.writeArithmetic(Commands.LT);
+					break;
+				case '>':
+					vmWriter.writeArithmetic(Commands.GT);
+					break;
+				case '=':
+					vmWriter.writeArithmetic(Commands.EQ);
+					break;
+					default:
+						break;
+			}
+
+
+
+				//**if op==* -> call Math.multiply 2
+				//**if op==/ -> call Math.divide 2
+				//**else write op
 		
 		}
 		
 	}
 
-	void compileExpressionList()
+	int compileExpressionList()
 	{
+		int count=0;
 		//expression
 		compileExpression();
-
+     
+		count++;
 		//(, expression)*
 		while(jackTokenizer.tokenType() == Tokens.symbol && jackTokenizer.symbol() ==',')
 		{
+			
 			//,
 			advance();
 
 			//expression
 			compileExpression();
 
+			count++;
+
 		}
+
+		return count;
 
 		
 	}
@@ -663,9 +802,19 @@ public class CompilationEngine{
 			case Tokens.integerConstant:
 				//integerConstent
 				//**push consternt (value)
+				vmWriter.writePush(SEGMENT.CONST,jackTokenizer.intVal());
 				advance();
 				break;
 			case Tokens.stringConstant:
+				string str =jackTokenizer.stringval();
+				vmWriter.writePush(SEGMENT.CONST,str.length);
+				vmWriter.writeCall("String.new",1);
+
+				for(int i=0;i<str.length;++i)
+				{
+					vmWriter.writePush(SEGMENT.CONST,str[i]);
+					vmWriter.writeCall("String.appendChar",2);
+				}
 				//stringConstent
 				//**push constant length of string
 				//**call String.new 1
@@ -683,6 +832,22 @@ public class CompilationEngine{
 			case Tokens.keyword :
 				//keywordConstent
 				//**if this -> push pointer 0
+				switch(jackTokenizer.keyWord())
+				{
+					case "this":
+						vmWriter.writePush(SEGMENT.POINTER,0);
+						break;
+					case "true":
+						vmWriter.writePush(SEGMENT.CONST,0);
+						vmWriter.writeArithmetic(Commands.NOT);
+						break;
+					case "null":						
+					case "false":
+						vmWriter.writePush(SEGMENT.CONST,0);
+						break;
+						default:
+							break;
+				}
                 //**if false || null -> push constent 0
 				//**if true -> push constent 0
 				//**           not
@@ -698,6 +863,10 @@ public class CompilationEngine{
 
 					//term
 					compileTerm();
+					if(jackTokenizer.symbol() =='-')
+						vmWriter.writeArithmetic(Commands.NEG);
+					else
+						vmWriter.writeArithmetic(Commands.NOT);
 
 					//**unary Op
 					break;
@@ -735,11 +904,16 @@ public class CompilationEngine{
 
 					//expression
 					compileExpression();
-
 					//**push varName
-                    //**add
-                    //**pop pointer 1
-					//**push that 0
+					vmWriter.writePush(kindToSegment(symbolTable.KindOf(tempTokenValue)),symbolTable.IndexOf(tempTokenValue));
+
+					//**add
+					 vmWriter.writeArithmetic(Commands.ADD);
+					//**pop pointer 1
+					 vmWriter.writePop(SEGMENT.POINTER,1);
+
+					 //**push that 0
+					 vmWriter.writePush(SEGMENT.THAT,0);
 					//]
 					
 					advance();
@@ -752,6 +926,10 @@ public class CompilationEngine{
 					compileSubroutineCall(tempTokenValue);
 					
 					break;
+				}
+				else
+				{
+					vmWriter.writePush(kindToSegment(symbolTable.KindOf(tempTokenValue)),symbolTable.IndexOf(tempTokenValue));
 				}
 			break;
 
@@ -770,5 +948,24 @@ public class CompilationEngine{
 			return true;
 		}
 		return false;
+	}
+
+	SEGMENT kindToSegment(Kind kind)
+	{
+		switch(kind)
+		{
+			case Kind.ARG:
+				return SEGMENT.ARG;
+			case Kind.VAR:
+				return SEGMENT.LOCAL;
+			case Kind.FIELD:
+				return SEGMENT.THIS;
+			case Kind.STATIC:
+				return SEGMENT.STATIC;
+			default:
+					return SEGMENT.STATIC;
+			
+			
+		}
 	}
 }
